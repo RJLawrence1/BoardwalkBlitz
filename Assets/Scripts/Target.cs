@@ -1,17 +1,13 @@
 // TARGET.CS  -  goes on every shootable thing (ducks, cans, aliens, bottles...).
 // It needs a Collider on the same object (Unity adds one for you if it's missing).
 //
-// IN ONE SENTENCE: when the Shooter says "you got hit", this gives (or takes) points and
-// flips the target down.
-//
-// THE INSPECTOR SETTINGS MAKE DIFFERENT TARGET TYPES - no new scripts needed:
+// TARGET TYPES (all Inspector settings):
+//   Gallery target .... tick "stayUp" - never goes away, every hit = points + a spin
 //   Normal target ..... points = 10
 //   Bonus target ...... points = 50
 //   Don't-shoot ....... tick "dontShoot" (you LOSE points and your combo breaks)
 //   Tough target ...... hitsToKill = 2 (like a bandit with a steel plate)
 //   Thrown bottle ..... untick "flipDown" so it just disappears
-//
-// "virtual" on Hit() means other scripts (like BossBandit) can swap in their own version.
 
 using UnityEngine;
 
@@ -19,19 +15,22 @@ using UnityEngine;
 public class Target : MonoBehaviour
 {
     [Header("Scoring")]
-    public int points = 10;         // base points (use bigger numbers for bonus targets)
-    public bool dontShoot = false;  // true = shooting it LOSES points and breaks your combo
+    public int points = 10;
+    public bool dontShoot = false;
 
     [Header("Toughness")]
-    public int hitsToKill = 1;      // 2 or more = takes several hits
+    public int hitsToKill = 1;      // ignored when stayUp is on
 
     [Header("Hit reaction")]
-    public bool flipDown = true;    // false = just disappear (good for thrown bottles)
-    public float flipTime = 0.25f;  // how long the flip takes (seconds)
+    public bool stayUp = false;     // true = can be hit forever, spins on every hit
+    public float spinTime = 0.3f;   // how long one full spin takes
+    public bool flipDown = true;    // only used when stayUp is OFF
+    public float flipTime = 0.25f;
 
     int hitsLeft;
     bool isDown;
-    float flipProgress;             // goes from 0 to 1 while flipping
+    float flipProgress;
+    float spinLeft;                 // how many degrees of spinning are still left to do
     Quaternion startRotation;
     Quaternion downRotation;
 
@@ -39,40 +38,58 @@ public class Target : MonoBehaviour
     {
         hitsLeft = hitsToKill;
         startRotation = transform.rotation;
-        // The "down" pose is the start pose tipped back 90 degrees (change -90 to 90 if it flips the wrong way)
         downRotation = startRotation * Quaternion.Euler(-90f, 0f, 0f);
     }
 
     void Update()
     {
-        if (!isDown) return;
+        // SPIN: turn a little each frame until the spin is used up
+        if (spinLeft > 0f)
+        {
+            float step = Mathf.Min(360f / spinTime * Time.deltaTime, spinLeft);
+            transform.Rotate(0f, step, 0f, Space.World);
+            spinLeft -= step;
+        }
 
-        // Slide smoothly from standing to flipped down, then remove the target
+        // FLIP DOWN (only for targets that don't stay up)
+        if (!isDown) return;
         flipProgress += Time.deltaTime / flipTime;
         transform.rotation = Quaternion.Slerp(startRotation, downRotation, flipProgress);
-
         if (flipProgress >= 1f) Destroy(gameObject);
     }
 
     public virtual void Hit()
     {
-        if (isDown) return;           // already flipped, ignore extra shots
+        if (isDown) return;
 
+        // GALLERY TARGET: score every single hit and spin
+        if (stayUp)
+        {
+            GivePoints();
+            spinLeft = Mathf.Min(spinLeft + 360f, 720f); // hits stack spins, max 2 queued
+            return;
+        }
+
+        // EVERYTHING ELSE: works exactly like before
         hitsLeft--;
-        if (hitsLeft > 0) return;     // tough target: still standing (later, play a "clang" sound here)
+        if (hitsLeft > 0) return;
 
-        // Don't-shoot targets turn the points negative
-        int value = dontShoot ? -Mathf.Abs(points) : points;
-        if (ScoreManager.Instance != null) ScoreManager.Instance.AddPoints(value);
+        GivePoints();
 
         if (flipDown)
         {
             isDown = true;
-            GetComponent<Collider>().enabled = false; // so you can't shoot it twice
+            GetComponent<Collider>().enabled = false;
         }
         else
         {
             Destroy(gameObject);
         }
+    }
+
+    void GivePoints()
+    {
+        int value = dontShoot ? -Mathf.Abs(points) : points;
+        if (ScoreManager.Instance != null) ScoreManager.Instance.AddPoints(value);
     }
 }
