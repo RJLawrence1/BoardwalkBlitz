@@ -9,6 +9,7 @@
 // SETUP: drag the Main Camera (it has Shooter) into "Shooter", your TargetSpawner(s) into
 // "Spawners", and optional TextMeshPro texts into the three text slots.
 // Type the next scene's exact name into "Next Scene Name" (and add it to File > Build Settings).
+// Sounds play through the SoundManager, so make sure one is in the scene.
 
 using System.Collections;
 using UnityEngine;
@@ -21,7 +22,7 @@ public class BoothManager : MonoBehaviour
     [Header("Timing")]
     public int countdownSeconds = 3;   // the "3, 2, 1" before the round
     public float roundTime = 60f;      // length of the round (try 15 while testing)
-    public float endDelay = 3f;        // how long the "TIME!" screen stays before moving on
+    public float endDelay = 4f;        // how long the "TIME!" screen stays before moving on
 
     [Header("Hookups")]
     public Shooter shooter;            // the Shooter on your Main Camera
@@ -32,8 +33,14 @@ public class BoothManager : MonoBehaviour
 
     [Header("When the round ends")]
     public string endMessage = "TIME!";
-    public string nextSceneName;       // leave empty to stay on this scene
-    public UnityEvent onRoundEnd;      // optional: hook up a cutscene or sound here
+    public bool clearTargetsAtEnd = false;   // false = leftover targets finish sliding off on their own
+    public string nextSceneName;             // leave empty to stay on this scene
+    public UnityEvent onRoundEnd;            // optional: hook up a cutscene or sound here
+
+    [Header("Countdown sounds")]
+    public AudioClip[] countdownSounds;      // Element 0 = "3", Element 1 = "2", Element 2 = "1"
+    public AudioClip goSound;                // plays on "GO!"
+    public AudioClip timeUpSound;            // plays on "TIME!"
 
     float timeLeft;
     bool isPlaying;
@@ -67,9 +74,15 @@ public class BoothManager : MonoBehaviour
         for (int i = countdownSeconds; i > 0; i--)
         {
             ShowMessage(i.ToString());
+
+            // first number uses Element 0, next uses Element 1, and so on
+            int index = countdownSeconds - i;
+            if (index < countdownSounds.Length) PlaySound(countdownSounds[index]);
+
             yield return new WaitForSeconds(1f);   // pause here for 1 second, then continue
         }
         ShowMessage("GO!");
+        PlaySound(goSound);
         Invoke("ClearMessage", 1f);                // hide the GO! after a second
 
         // 2) PLAYING: the clock runs until it hits zero (or EndRoundEarly is called)
@@ -85,18 +98,26 @@ public class BoothManager : MonoBehaviour
             yield return null;                     // wait one frame, then check again
         }
 
-        // 3) ROUND OVER
+        // 3) ROUND OVER: stop spawning and shooting
         isPlaying = false;
         timeLeft = Mathf.Max(0f, timeLeft);
         SetShooting(false);
         SetSpawning(false);
-        foreach (TargetSpawner s in spawners)
+
+        // only wipe targets if you ticked "Clear Targets At End"
+        // (otherwise they keep sliding and despawn at the end of their lane)
+        if (clearTargetsAtEnd)
         {
-            if (s != null) s.ClearAll();
+            foreach (TargetSpawner s in spawners)
+            {
+                if (s != null) s.ClearAll();
+            }
         }
+
         if (ScoreManager.Instance != null) ScoreManager.Instance.EndBooth();
         UpdateUI();
         ShowMessage(endMessage);
+        PlaySound(timeUpSound);
         onRoundEnd.Invoke();
 
         yield return new WaitForSeconds(endDelay);
@@ -126,15 +147,18 @@ public class BoothManager : MonoBehaviour
         ShowMessage("");
     }
 
+    void PlaySound(AudioClip clip)
+    {
+        if (SoundManager.Instance != null) SoundManager.Instance.Play(clip, 1f, 0f); // 0 = no pitch wobble
+    }
+
     void UpdateUI()
     {
-        if (timerText != null) timerText.text = Mathf.CeilToInt(timeLeft).ToString();
+        if (timerText != null) timerText.text = Mathf.CeilToInt(timeLeft).ToString("00");
 
         if (scoreText != null && ScoreManager.Instance != null)
         {
-            string text = "Score: " + ScoreManager.Instance.score;
-            if (ScoreManager.Instance.Multiplier > 1) text += "  x" + ScoreManager.Instance.Multiplier;
-            scoreText.text = text;
+            scoreText.text = ScoreManager.Instance.score.ToString("0000000");
         }
     }
 }

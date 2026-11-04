@@ -19,18 +19,21 @@ public class Target : MonoBehaviour
     public bool dontShoot = false;
 
     [Header("Toughness")]
-    public int hitsToKill = 1;      // ignored when stayUp is on
+    public int hitsToKill = 1;
+
+    [Header("Sound")]
+    public AudioClip[] hitSounds;       // every sound in this list plays on a hit
 
     [Header("Hit reaction")]
-    public bool stayUp = false;     // true = can be hit forever, spins on every hit
-    public float spinTime = 0.3f;   // how long one full spin takes
-    public bool flipDown = true;    // only used when stayUp is OFF
+    public bool stayUp = false;
+    public float spinTime = 0.3f;
+    public bool flipDown = true;
     public float flipTime = 0.25f;
 
     int hitsLeft;
     bool isDown;
     float flipProgress;
-    float spinLeft;                 // how many degrees of spinning are still left to do
+    float spinLeft;
     Quaternion startRotation;
     Quaternion downRotation;
 
@@ -43,7 +46,6 @@ public class Target : MonoBehaviour
 
     void Update()
     {
-        // SPIN: turn a little each frame until the spin is used up
         if (spinLeft > 0f)
         {
             float step = Mathf.Min(360f / spinTime * Time.deltaTime, spinLeft);
@@ -51,7 +53,6 @@ public class Target : MonoBehaviour
             spinLeft -= step;
         }
 
-        // FLIP DOWN (only for targets that don't stay up)
         if (!isDown) return;
         flipProgress += Time.deltaTime / flipTime;
         transform.rotation = Quaternion.Slerp(startRotation, downRotation, flipProgress);
@@ -62,15 +63,19 @@ public class Target : MonoBehaviour
     {
         if (isDown) return;
 
-        // GALLERY TARGET: score every single hit and spin
+        if (SoundManager.Instance != null)
+        {
+            foreach (AudioClip clip in hitSounds)
+                SoundManager.Instance.Play(clip);
+        }
+
         if (stayUp)
         {
             GivePoints();
-            spinLeft = Mathf.Min(spinLeft + 360f, 720f); // hits stack spins, max 2 queued
+            spinLeft = Mathf.Min(spinLeft + 360f, 720f);
             return;
         }
 
-        // EVERYTHING ELSE: works exactly like before
         hitsLeft--;
         if (hitsLeft > 0) return;
 

@@ -220,9 +220,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54da06fc690e1874e8a09a6289007836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Target
-  points: 10
+  points: 150
   dontShoot: 0
   hitsToKill: 1
+  hitSounds:
+  - {fileID: 8300000, guid: 808c50db7d31de24b9b023fd46e0bb69, type: 3}
+  - {fileID: 8300000, guid: 439ae2203b997e34eaf1f6d41c801d35, type: 3}
   stayUp: 1
   spinTime: 0.3
   flipDown: 0
@@ -241,4 +244,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LaneMover
   direction: {x: 1, y: 0, z: 0}
   speed: 3
+  travelDistance: 0
   lifetime: 6

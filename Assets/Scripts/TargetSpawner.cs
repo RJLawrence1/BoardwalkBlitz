@@ -1,13 +1,16 @@
 // TARGETSPAWNER.CS  -  put it on an empty GameObject near the booth (keep its Scale at 1,1,1).
 //
 // TWO MODES:
-//   Random (Use Waves OFF) ... spawns a random target every second or so, speeding up over the round
+//   Random (Use Waves OFF) ... spawns targets on a timer, speeding up over the round
+//                              - Every Lane ON  = every lane spawns on its own timer, all at once
+//                              - Every Lane OFF = one target at a time in a random lane
 //   Waves  (Use Waves ON) .... plays the waves you set up in the Inspector, in order
 //
 // SETUP:
-//   - Prefabs: your target prefabs (duck, can, bottle...). Waves use these if a wave has none of its own.
+//   - Prefabs: your target prefabs (duck, bullseye...). Waves use these if a wave has none of its own.
 //   - Spawn Points: empty GameObjects where targets appear. Each one's RED ARROW is the slide direction.
-//   - Booth: drag in the BoothManager (optional, used by Random mode to speed up).
+//   - Lane Length: how far targets travel before they're removed (distance between your spawn points).
+//   - Booth: drag in the BoothManager (optional, makes random mode speed up over the round).
 
 using System.Collections;
 using UnityEngine;
@@ -17,11 +20,11 @@ public class Wave
 {
     public string name = "Wave";
     public GameObject[] prefabs;                     // leave empty to use the spawner's main Prefabs list
-    public int count = 5;                            // how many targets in this wave
+    public int count = 5;                            // how many targets (per row if All Lanes is on)
     public float interval = 1f;                      // seconds between each target
-    public Vector2 speedRange = new Vector2(2f, 4f); // random speed for each target
+    public Vector2 speedRange = new Vector2(2f, 4f); // one speed is picked from this for the whole wave
     public int spawnPointIndex = -1;                 // -1 = random lane, 0 = first spawn point, 1 = second...
-    public bool allLanes = false;   // true = spawn in EVERY row, count = targets per row
+    public bool allLanes = false;                    // true = spawn in EVERY row at once
     public float pauseAfter = 2f;                    // breather before the next wave
 }
 
@@ -40,17 +43,20 @@ public class TargetSpawner : MonoBehaviour
     public bool loopWaves = true;     // after the last wave, start again from wave 1
 
     [Header("Random mode timing")]
-    public float startInterval = 1.5f;
-    public float endInterval = 0.7f;
-    public Vector2 speedRange = new Vector2(2f, 4f);
+    public float startInterval = 1.5f;               // seconds between spawns at the start of the round
+    public float endInterval = 0.7f;                 // seconds between spawns at the end (smaller = faster)
+    public Vector2 speedRange = new Vector2(2.5f, 2.5f); // keep both the same so nothing catches up
+    public bool everyLane = true;                    // true = every lane spawns on its own timer, all at once
+    public float laneJitter = 0.4f;                  // random extra wait so lanes don't spawn in sync
 
     [Header("Optional")]
-    public float laneLength = 10f;   // how far targets travel before being removed
-    public BoothManager booth;
+    public BoothManager booth;        // lets random mode speed up as the round goes on
+    public float laneLength = 10f;    // how far targets travel before being removed
 
     float timer;
     bool wasSpawning;
     int waveIndex;
+    float[] laneTimers;               // one countdown per lane (Every Lane mode)
 
     // Other scripts (like the UI) can read this to show "Wave 3"
     public int CurrentWave => waveIndex + 1;
@@ -71,16 +77,42 @@ public class TargetSpawner : MonoBehaviour
             return;
         }
 
-        // ---- RANDOM MODE (same as before) ----
+        // ---- RANDOM MODE ----
         if (!isSpawning) return;
 
+        // Slides from startInterval to endInterval as the round goes on (0 -> 1)
+        float progress = (booth != null) ? booth.Progress : 0f;
+        float interval = Mathf.Lerp(startInterval, endInterval, progress);
+
+        if (everyLane)
+        {
+            // make one timer per lane the first time (staggered start so they don't all spawn together)
+            if (laneTimers == null || laneTimers.Length != spawnPoints.Length)
+            {
+                laneTimers = new float[spawnPoints.Length];
+                for (int i = 0; i < laneTimers.Length; i++)
+                    laneTimers[i] = Random.Range(0f, interval);
+            }
+
+            // count down each lane separately and spawn when its timer runs out
+            for (int i = 0; i < laneTimers.Length; i++)
+            {
+                laneTimers[i] -= Time.deltaTime;
+                if (laneTimers[i] <= 0f)
+                {
+                    Spawn(PickPrefab(null), spawnPoints[i], speedRange);
+                    laneTimers[i] = interval + Random.Range(0f, laneJitter);
+                }
+            }
+            return;
+        }
+
+        // one target at a time in a random lane
         timer -= Time.deltaTime;
         if (timer > 0f) return;
 
         Spawn(PickPrefab(null), PickPoint(-1), speedRange);
-
-        float progress = (booth != null) ? booth.Progress : 0f;
-        timer = Mathf.Lerp(startInterval, endInterval, progress);
+        timer = interval;
     }
 
     public void RestartWaves()
@@ -150,17 +182,20 @@ public class TargetSpawner : MonoBehaviour
     {
         if (prefab == null || point == null) return;
 
+        // Create it at the spawn point, keeping the prefab's own rotation, as a child of this object
         GameObject spawned = Instantiate(prefab, point.position, prefab.transform.rotation, transform);
 
+        // If it slides, tell it which way, how fast, and how far to go
         LaneMover mover = spawned.GetComponent<LaneMover>();
         if (mover != null)
         {
             mover.direction = point.right;
             mover.speed = Random.Range(speeds.x, speeds.y);
-            mover.travelDistance = laneLength;   // ← add this line
+            mover.travelDistance = laneLength;
         }
     }
 
+    // Removes every target this spawner made (BoothManager calls this when the round ends)
     public void ClearAll()
     {
         foreach (Transform child in transform)

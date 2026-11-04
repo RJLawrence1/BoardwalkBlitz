@@ -19,7 +19,7 @@ public class ScoreManager : MonoBehaviour
     public int totalScore;  // all booths so far (used for the final results)
     public int combo;       // current streak of hits
 
-    public int hitsPerLevel = 5;   // hits in a row needed to raise the multiplier
+    public int hitsPerLevel = 1;   // hits in a row needed to raise the multiplier
     public int maxMultiplier = 4;
 
     // 1 + (combo / 5), but never above maxMultiplier. Example: combo 12 -> 1 + 2 = x3
