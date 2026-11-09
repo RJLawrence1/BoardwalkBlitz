@@ -1064,10 +1064,10 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 2
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.8
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -1120,13 +1120,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 362190612}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2981332, y: 0.124485, z: -0.039249968, w: 0.9455578}
+  m_LocalRotation: {x: 0.17322516, y: 0.06869671, z: -0.012113081, w: 0.9824088}
   m_LocalPosition: {x: -5.01, y: 10.39, z: 4.23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 35, y: 15, z: 0}
+  m_LocalEulerAnglesHint: {x: 20, y: 8, z: 0}
 --- !u!1 &472412411
 GameObject:
   m_ObjectHideFlags: 0
@@ -1677,6 +1677,9 @@ MonoBehaviour:
   onRoundEnd:
     m_PersistentCalls:
       m_Calls: []
+  countdownSounds: []
+  goSound: {fileID: 0}
+  timeUpSound: {fileID: 0}
 --- !u!1 &1016593246
 GameObject:
   m_ObjectHideFlags: 0
@@ -1872,9 +1875,9 @@ Canvas:
   m_GameObject: {fileID: 1021568621}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
+  m_RenderMode: 1
+  m_Camera: {fileID: 330585545}
+  m_PlaneDistance: 1
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -3211,8 +3214,8 @@ Transform:
   m_GameObject: {fileID: 2130819845}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 0.02597, y: 0.05079007, z: 0.125}
-  m_LocalScale: {x: 7, y: 2.32, z: 0.25}
+  m_LocalPosition: {x: 0.02597, y: -0.259, z: 0.1}
+  m_LocalScale: {x: 7, y: 3, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 920157019}
