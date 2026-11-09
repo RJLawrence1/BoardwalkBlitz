@@ -121,7 +121,7 @@ public class BoothManager : MonoBehaviour
         onRoundEnd.Invoke();
 
         yield return new WaitForSeconds(endDelay);
-        if (!string.IsNullOrEmpty(nextSceneName)) SceneManager.LoadScene(nextSceneName);
+        if (!string.IsNullOrEmpty(nextSceneName)) SceneFader.FadeToScene(nextSceneName);
     }
 
     void SetSpawning(bool on)
