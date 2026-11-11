@@ -1,15 +1,8 @@
 // BOOTHMANAGER.CS  -  one per booth scene. Put it on an empty GameObject called "BoothManager".
 //
-// IN ONE SENTENCE: runs one round from start to finish: "ROUND #", countdown, the timed round,
-// "TIME!", this round's score, the running total, then it loads the next scene.
-//
-// WORKS FOR ANY NUMBER OF ROUNDS: each booth adds its score to the running total and bumps the
-// round counter in ScoreManager, so you can chain as many booth scenes as you like.
-//
-// SETUP: drag the Main Camera (it has Shooter) into "Shooter", your TargetSpawner(s) into
-// "Spawners", and the TextMeshPro texts into the text slots.
-// Use DSEG14 on Message Text so words like "ROUND" and "TIME!" display properly.
-// Type the next scene's exact name into "Next Scene Name" (and add it to the Scene List).
+// IN ONE SENTENCE: runs one round: Curly pops up and does his intro, ducks down, "ROUND #",
+// countdown, the timed round, "TIME!", round score, running total, Curly pops up for his outro,
+// then the next scene. Works for any number of booths in a row.
 
 using System.Collections;
 using UnityEngine;
@@ -19,39 +12,44 @@ using TMPro;
 public class BoothManager : MonoBehaviour
 {
     [Header("Timing")]
-    public int countdownSeconds = 3;   // the "3, 2, 1" before the round
-    public float roundTime = 60f;      // length of the round (try 15 while testing)
-    public float messageTime = 1.5f;   // how long "ROUND #", "TIME!" and the score screens stay up
+    public int countdownSeconds = 3;
+    public float roundTime = 60f;      // try 15 while testing
+    public float messageTime = 1.5f;   // how long ROUND #, TIME! and score screens stay up
 
     [Header("Hookups")]
-    public Shooter shooter;            // the Shooter on your Main Camera
-    public TargetSpawner[] spawners;   // every spawner in this booth
-    public TMP_Text timerText;         // optional
-    public TMP_Text scoreText;         // optional
-    public TMP_Text messageText;       // optional (shows ROUND #, 3, 2, 1, GO!, TIME!, scores)
+    public Shooter shooter;
+    public TargetSpawner[] spawners;
+    public TMP_Text timerText;
+    public TMP_Text scoreText;
+    public TMP_Text messageText;       // use DSEG14 so words display properly
+
+    [Header("Dialogue")]
+    public DialogueBox dialogue;       // optional
+    public CurlyPopup curly;           // Curly in the booth (optional)
+    public DialogueLine[] introLines;  // Curly before the round
+    public DialogueLine[] outroLines;  // Curly after the scores
+    public bool duckAfterOutro = false;// true = Curly ducks before the scene fades
 
     [Header("Score display")]
-    public bool showRunningTotal = true;   // true = scoreboard keeps climbing across rounds
+    public bool showRunningTotal = true;
 
     [Header("When the round ends")]
     public string endMessage = "TIME!";
-    public bool clearTargetsAtEnd = false;   // false = leftover targets finish sliding off on their own
-    public string nextSceneName;             // leave empty to stay on this scene
-    public UnityEvent onRoundEnd;            // optional: hook up a cutscene or sound here
+    public bool clearTargetsAtEnd = false;
+    public string nextSceneName;
+    public UnityEvent onRoundEnd;
 
     [Header("Countdown sounds")]
-    public AudioClip[] countdownSounds;      // Element 0 = "3", Element 1 = "2", Element 2 = "1"
-    public AudioClip goSound;                // plays on "GO!"
-    public AudioClip timeUpSound;            // plays on "TIME!"
+    public AudioClip[] countdownSounds;   // Element 0 = "3", 1 = "2", 2 = "1"
+    public AudioClip goSound;
+    public AudioClip timeUpSound;
 
     float timeLeft;
     bool isPlaying;
     bool endEarly;
 
     public bool IsPlaying => isPlaying;
-
-    // 0 at the start of the round, 1 at the end (the spawner uses this to speed up)
-    public float Progress => Mathf.Clamp01(1f - timeLeft / roundTime);
+    public float Progress => Mathf.Clamp01(1f - timeLeft / roundTime);   // 0 at start, 1 at end
 
     void Start()
     {
@@ -59,7 +57,6 @@ public class BoothManager : MonoBehaviour
         StartCoroutine(RunRound());
     }
 
-    // Another script (like the boss fight) can call this to finish the round before the timer runs out
     public void EndRoundEarly()
     {
         endEarly = true;
@@ -69,32 +66,36 @@ public class BoothManager : MonoBehaviour
     {
         ScoreManager sm = ScoreManager.Instance;
 
-        // 0) SETUP: nobody can shoot and nothing spawns yet
+        // SETUP
         SetSpawning(false);
         SetShooting(false);
         if (sm != null) sm.StartBooth();
         UpdateUI();
+        yield return new WaitForSeconds(0.5f);   // let the fade-in finish
 
-        // 1) "ROUND #" intro (counts up forever: round 1, 2, 3...)
+        // CURLY'S INTRO: pop up, talk, duck down
+        if (curly != null) yield return curly.PopUp();
+        if (dialogue != null) yield return dialogue.Play(introLines);
+        if (curly != null) yield return curly.Duck();
+
+        // ROUND #
         int roundNumber = (sm != null) ? sm.roundsPlayed + 1 : 1;
         ShowMessage("ROUND " + roundNumber);
         yield return new WaitForSeconds(messageTime);
 
-        // 2) COUNTDOWN
+        // COUNTDOWN
         for (int i = countdownSeconds; i > 0; i--)
         {
             ShowMessage(i.ToString());
-
-            int index = countdownSeconds - i;   // first number uses Element 0, and so on
+            int index = countdownSeconds - i;
             if (index < countdownSounds.Length) PlaySound(countdownSounds[index]);
-
             yield return new WaitForSeconds(1f);
         }
         ShowMessage("GO!");
         PlaySound(goSound);
         Invoke("ClearMessage", 1f);
 
-        // 3) PLAYING: the clock runs until it hits zero (or EndRoundEarly is called)
+        // PLAYING
         if (shooter != null) shooter.ResetShooter();
         SetShooting(true);
         SetSpawning(true);
@@ -107,7 +108,7 @@ public class BoothManager : MonoBehaviour
             yield return null;
         }
 
-        // 4) ROUND OVER: stop spawning and shooting
+        // ROUND OVER
         isPlaying = false;
         timeLeft = Mathf.Max(0f, timeLeft);
         SetShooting(false);
@@ -116,41 +117,39 @@ public class BoothManager : MonoBehaviour
         if (clearTargetsAtEnd)
         {
             foreach (TargetSpawner s in spawners)
-            {
                 if (s != null) s.ClearAll();
-            }
         }
 
-        // grab this round's score, then add it to the running total
         int roundScore = (sm != null) ? sm.score : 0;
         if (sm != null) sm.EndBooth();
         UpdateUI();
 
-        // "TIME!"
         ShowMessage(endMessage);
         PlaySound(timeUpSound);
         onRoundEnd.Invoke();
         yield return new WaitForSeconds(messageTime);
 
-        // this round's score
         ShowMessage("ROUND\n" + roundScore.ToString("0000000"));
         yield return new WaitForSeconds(messageTime);
 
-        // running total so far
         int total = (sm != null) ? sm.totalScore : roundScore;
         ShowMessage("TOTAL\n" + total.ToString("0000000"));
         yield return new WaitForSeconds(messageTime);
+        ClearMessage();
 
-        // 5) NEXT SCENE
+        // CURLY'S OUTRO: pop up and talk
+        if (curly != null) yield return curly.PopUp();
+        if (dialogue != null) yield return dialogue.Play(outroLines);
+        if (curly != null && duckAfterOutro) yield return curly.Duck();
+
+        // NEXT SCENE
         if (!string.IsNullOrEmpty(nextSceneName)) SceneFader.FadeToScene(nextSceneName);
     }
 
     void SetSpawning(bool on)
     {
         foreach (TargetSpawner s in spawners)
-        {
             if (s != null) s.isSpawning = on;
-        }
     }
 
     void SetShooting(bool on)
@@ -170,7 +169,7 @@ public class BoothManager : MonoBehaviour
 
     void PlaySound(AudioClip clip)
     {
-        if (SoundManager.Instance != null) SoundManager.Instance.Play(clip, 1f, 0f); // 0 = no pitch wobble
+        if (SoundManager.Instance != null) SoundManager.Instance.Play(clip, 1f, 0f);
     }
 
     void UpdateUI()
@@ -180,8 +179,7 @@ public class BoothManager : MonoBehaviour
         ScoreManager sm = ScoreManager.Instance;
         if (scoreText != null && sm != null)
         {
-            // running total = everything from earlier rounds + this round so far
-            // (after EndBooth runs, "score" is already inside totalScore, so don't add it twice)
+            // after EndBooth, "score" is already inside totalScore, so don't add it twice
             int shown = showRunningTotal
                 ? (isPlaying ? sm.totalScore + sm.score : sm.totalScore)
                 : sm.score;
