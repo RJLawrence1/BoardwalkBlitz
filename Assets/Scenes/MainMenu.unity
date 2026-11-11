@@ -1355,7 +1355,9 @@ MonoBehaviour:
   minBrightness: 0.85
   flicker: 1
   flickerChance: 0.01
-  clickSound: {fileID: 8300000, guid: e5c2e8a84289aa74e926412e07fda8df, type: 3}
+  clickSounds:
+  - {fileID: 8300000, guid: e5c2e8a84289aa74e926412e07fda8df, type: 3}
+  - {fileID: 8300000, guid: 808c50db7d31de24b9b023fd46e0bb69, type: 3}
   clickFlickers: 4
   flickerStep: 0.06
 --- !u!1 &976796084

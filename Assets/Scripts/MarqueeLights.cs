@@ -25,7 +25,7 @@ public class MarqueeLights : MonoBehaviour, IPointerClickHandler   // lets this 
     public float flickerChance = 0.01f;
 
     [Header("When shot")]
-    public AudioClip clickSound;        // the gun sound
+    public AudioClip[] clickSounds;     // every sound in this list plays when shot (gun + twang)
     public int clickFlickers = 4;       // how many times it blinks
     public float flickerStep = 0.06f;   // how fast each blink is (seconds)
 
@@ -50,8 +50,12 @@ public class MarqueeLights : MonoBehaviour, IPointerClickHandler   // lets this 
     // Unity calls this automatically when the logo gets clicked
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (SoundManager.Instance != null) SoundManager.Instance.Play(clickSound);
-        blinksLeft = clickFlickers * 2;   // each blink = one dark step + one bright step
+        if (SoundManager.Instance != null)
+        {
+            foreach (AudioClip clip in clickSounds)
+                SoundManager.Instance.Play(clip);
+        }
+        blinksLeft = clickFlickers * 2;
         blinkTimer = 0f;
     }
 

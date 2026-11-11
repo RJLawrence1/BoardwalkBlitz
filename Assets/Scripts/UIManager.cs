@@ -63,7 +63,7 @@ public class UIManager : MonoBehaviour
         if (shooter != null)
         {
             if (reloadObject != null) reloadObject.SetActive(shooter.IsReloading);
-            if (ammoText != null) ammoText.text = shooter.IsReloading ? "AMM0:---" : "AMM0:" + shooter.ShotsLeft.ToString("00");   // CHANGED: 3 digits
+            if (ammoText != null) ammoText.text = shooter.IsReloading ? "AMM0:--" : "AMM0:" + shooter.ShotsLeft.ToString("00");   // CHANGED: 3 digits
         }
     }
 

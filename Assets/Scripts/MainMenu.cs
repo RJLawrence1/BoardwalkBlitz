@@ -1,22 +1,22 @@
 // MAINMENU.CS  -  goes on an empty GameObject in your MAIN MENU scene.
 //
-// IN ONE SENTENCE: it has the functions your title-screen buttons call (Play, How To Play,
-// Options, Quit) and shows your best score.
+// IN ONE SENTENCE: it has the functions your title-screen buttons call (New Game, How To Play,
+// Options, Quit), shows your best score, and handles the Family Friendly setting.
 //
 // SETUP:
-//   - Make UI Buttons. On each Button, use the OnClick list:
+//   - Buttons (OnClick list):
 //       New Game     -> MainMenu.StartGame
 //       How To Play  -> MainMenu.ToggleHowToPlay
 //       Options      -> MainMenu.ToggleOptionsMenu
 //       Quit         -> MainMenu.QuitGame
-//   - howToPlayPanel / optionsPanel: UI Panels. Leave them switched OFF in the editor.
-//     A "Back" button inside each panel can call the same Toggle function to close it.
-//   - bestScoreText (optional): a TextMeshPro text that shows the best score.
-//   - firstScene: the scene that starts the game.
-//   - Add every scene to File > Build Settings, or LoadScene won't find it.
+//   - Family Friendly Toggle (in the Options panel): On Value Changed -> MainMenu.SetFamilyFriendly
+//     (pick it from the "Dynamic bool" section at the top of the list)
+//   - howToPlayPanel / optionsPanel: UI Panels, switched OFF in the editor.
+//   - Add every scene to the Scene List, or loading won't find it.
 
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class MainMenu : MonoBehaviour
@@ -26,15 +26,16 @@ public class MainMenu : MonoBehaviour
     [Header("Panels")]
     public GameObject howToPlayPanel;
     public GameObject optionsPanel;
+    public Toggle familyFriendlyToggle;     // the checkbox in the Options panel
 
     [Header("Optional")]
     public TMP_Text bestScoreText;
 
     [Header("Sound")]
     public AudioClip clickSound;            // plays when you "shoot" a button
-    public float loadDelay = 0f;            // extra wait before fading (the fade already gives the sound time)
+    public float loadDelay = 0f;            // extra wait before fading
 
-    bool loading;                           // stops double-clicks from loading twice
+    bool loading;                           // stops double-clicks
 
     void Start()
     {
@@ -48,6 +49,9 @@ public class MainMenu : MonoBehaviour
         // make sure both panels start closed
         if (howToPlayPanel != null) howToPlayPanel.SetActive(false);
         if (optionsPanel != null) optionsPanel.SetActive(false);
+
+        // show the saved setting on the checkbox
+        if (familyFriendlyToggle != null) familyFriendlyToggle.isOn = GameSettings.FamilyFriendly;
     }
 
     // --- Button actions ---
@@ -79,9 +83,15 @@ public class MainMenu : MonoBehaviour
         TogglePanel(optionsPanel, howToPlayPanel);
     }
 
+    // the Family Friendly checkbox calls this when it's clicked
+    public void SetFamilyFriendly(bool on)
+    {
+        GameSettings.FamilyFriendly = on;
+    }
+
     public void QuitGame()
     {
-        if (loading) return;            // ignore extra clicks
+        if (loading) return;
         StartCoroutine(QuitAfterSound());
     }
 
@@ -94,11 +104,11 @@ public class MainMenu : MonoBehaviour
         float wait = (clickSound != null) ? clickSound.length : 0.5f;
         yield return new WaitForSecondsRealtime(wait);
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;   // stops Play mode in the editor
-    #else
+#else
         Application.Quit();                                // closes the real game
-    #endif
+#endif
     }
 
     // Opens or closes "panel", and always closes "other" so they never overlap
