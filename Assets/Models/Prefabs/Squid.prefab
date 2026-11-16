@@ -222,7 +222,9 @@ MonoBehaviour:
   points: 100
   dontShoot: 0
   hitsToKill: 1
-  hitSounds: []
+  hitSounds:
+  - {fileID: 8300000, guid: 808c50db7d31de24b9b023fd46e0bb69, type: 3}
+  - {fileID: 8300000, guid: 6de924d7afbb616418b17dd81cfef15c, type: 3}
   stayUp: 1
   spinTime: 0.3
   flipDown: 0
