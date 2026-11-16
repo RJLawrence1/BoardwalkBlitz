@@ -6,16 +6,17 @@
 //                              - Every Lane OFF = one target at a time in a random lane
 //   Waves  (Use Waves ON) .... plays the waves you set up in the Inspector, in order
 //
-// SETUP:
-//   - Prefabs: your target prefabs (duck, bullseye...). Waves use these if a wave has none of its own.
-//   - Spawn Points: empty GameObjects where targets appear. Each one's RED ARROW is the slide direction.
-//   - Lane Length: how far targets travel before they're removed (distance between your spawn points).
-//   - Booth: drag in the BoothManager (optional, makes random mode speed up over the round).
+// CHANCES: fill "Chances" in the same order as "Prefabs" (e.g. 65 and 35) to make some targets
+// more common than others. Leave it empty for equal odds.
+//
+// AUTO LIMITS: when a target spawns, the spawner works out how much room it has
+// (Vertical Room for up/down, and the gap to its neighbors for forward/back)
+// and tells the target's LaneMover, so wiggling targets never leave their row or collide.
 
 using System.Collections;
 using UnityEngine;
 
-[System.Serializable]   // makes this show up in the Inspector as a fold-out
+[System.Serializable]
 public class Wave
 {
     public string name = "Wave";
@@ -32,33 +33,37 @@ public class TargetSpawner : MonoBehaviour
 {
     [Header("What to spawn and where")]
     public GameObject[] prefabs;
+    public float[] chances;           // same order as Prefabs, e.g. 65 and 35 (don't have to add up to 100)
     public Transform[] spawnPoints;
 
     [Header("Mode")]
     public bool isSpawning = true;    // BoothManager turns this on and off
-    public bool useWaves = false;     // tick to use the Waves list below
+    public bool useWaves = false;
 
     [Header("Waves")]
     public Wave[] waves;
-    public bool loopWaves = true;     // after the last wave, start again from wave 1
+    public bool loopWaves = true;
 
     [Header("Random mode timing")]
-    public float startInterval = 1.5f;               // seconds between spawns at the start of the round
-    public float endInterval = 0.7f;                 // seconds between spawns at the end (smaller = faster)
+    public float startInterval = 1.5f;
+    public float endInterval = 0.7f;
     public Vector2 speedRange = new Vector2(2.5f, 2.5f); // keep both the same so nothing catches up
-    public bool everyLane = true;                    // true = every lane spawns on its own timer, all at once
-    public float laneJitter = 0.4f;                  // random extra wait so lanes don't spawn in sync
+    public bool everyLane = true;
+    public float laneJitter = 0.4f;
+
+    [Header("Auto limits")]
+    public float verticalRoom = 0.2f;   // most a target may move up/down without leaving its row
+    public float minGap = 0.1f;         // breathing room kept between neighbors
 
     [Header("Optional")]
-    public BoothManager booth;        // lets random mode speed up as the round goes on
-    public float laneLength = 10f;    // how far targets travel before being removed
+    public BoothManager booth;
+    public float laneLength = 10f;      // how far targets travel before being removed
 
     float timer;
     bool wasSpawning;
     int waveIndex;
-    float[] laneTimers;               // one countdown per lane (Every Lane mode)
+    float[] laneTimers;
 
-    // Other scripts (like the UI) can read this to show "Wave 3"
     public int CurrentWave => waveIndex + 1;
 
     void Start()
@@ -71,7 +76,6 @@ public class TargetSpawner : MonoBehaviour
         // ---- WAVE MODE ----
         if (useWaves)
         {
-            // The moment spawning gets switched on (start of a round), begin from wave 1
             if (isSpawning && !wasSpawning) RestartWaves();
             wasSpawning = isSpawning;
             return;
@@ -80,13 +84,11 @@ public class TargetSpawner : MonoBehaviour
         // ---- RANDOM MODE ----
         if (!isSpawning) return;
 
-        // Slides from startInterval to endInterval as the round goes on (0 -> 1)
         float progress = (booth != null) ? booth.Progress : 0f;
         float interval = Mathf.Lerp(startInterval, endInterval, progress);
 
         if (everyLane)
         {
-            // make one timer per lane the first time (staggered start so they don't all spawn together)
             if (laneTimers == null || laneTimers.Length != spawnPoints.Length)
             {
                 laneTimers = new float[spawnPoints.Length];
@@ -94,24 +96,23 @@ public class TargetSpawner : MonoBehaviour
                     laneTimers[i] = Random.Range(0f, interval);
             }
 
-            // count down each lane separately and spawn when its timer runs out
             for (int i = 0; i < laneTimers.Length; i++)
             {
                 laneTimers[i] -= Time.deltaTime;
                 if (laneTimers[i] <= 0f)
                 {
-                    Spawn(PickPrefab(null), spawnPoints[i], speedRange);
+                    // endInterval = the closest targets can ever get, so sway is always safe
+                    Spawn(PickPrefab(null), spawnPoints[i], speedRange, endInterval);
                     laneTimers[i] = interval + Random.Range(0f, laneJitter);
                 }
             }
             return;
         }
 
-        // one target at a time in a random lane
         timer -= Time.deltaTime;
         if (timer > 0f) return;
 
-        Spawn(PickPrefab(null), PickPoint(-1), speedRange);
+        Spawn(PickPrefab(null), PickPoint(-1), speedRange, endInterval);
         timer = interval;
     }
 
@@ -122,14 +123,12 @@ public class TargetSpawner : MonoBehaviour
         if (waves.Length > 0) StartCoroutine(RunWaves());
     }
 
-    // A "coroutine" can pause partway through with "yield", which makes timed sequences easy
     IEnumerator RunWaves()
     {
         while (true)
         {
             Wave w = waves[waveIndex];
 
-            // pick ONE speed for the whole wave, so nothing in a row catches up to anything else
             float waveSpeed = Random.Range(w.speedRange.x, w.speedRange.y);
             Vector2 speeds = new Vector2(waveSpeed, waveSpeed);
 
@@ -137,18 +136,17 @@ public class TargetSpawner : MonoBehaviour
             {
                 if (w.allLanes)
                 {
-                    // one target per row, spread out so the rows don't line up in columns
                     for (int lane = 0; lane < spawnPoints.Length; lane++)
                     {
                         if (!isSpawning) yield break;
-                        Spawn(PickPrefab(w.prefabs), spawnPoints[lane], speeds);
+                        Spawn(PickPrefab(w.prefabs), spawnPoints[lane], speeds, w.interval);
                         yield return new WaitForSeconds(w.interval / spawnPoints.Length);
                     }
                 }
                 else
                 {
                     if (!isSpawning) yield break;
-                    Spawn(PickPrefab(w.prefabs), PickPoint(w.spawnPointIndex), speeds);
+                    Spawn(PickPrefab(w.prefabs), PickPoint(w.spawnPointIndex), speeds, w.interval);
                     yield return new WaitForSeconds(w.interval);
                 }
             }
@@ -166,8 +164,30 @@ public class TargetSpawner : MonoBehaviour
 
     GameObject PickPrefab(GameObject[] list)
     {
-        if (list == null || list.Length == 0) list = prefabs;   // fall back to the main list
+        bool usingMainList = (list == null || list.Length == 0);
+        if (usingMainList) list = prefabs;
         if (list.Length == 0) return null;
+
+        // use the Chances list if it matches the Prefabs list
+        if (usingMainList && chances != null && chances.Length == list.Length)
+        {
+            float total = 0f;
+            foreach (float c in chances) total += Mathf.Max(0f, c);
+
+            if (total > 0f)
+            {
+                // roll a random number along the total, then see whose "slice" it landed in
+                float roll = Random.value * total;
+                for (int i = 0; i < list.Length; i++)
+                {
+                    roll -= Mathf.Max(0f, chances[i]);
+                    if (roll <= 0f) return list[i];
+                }
+                return list[list.Length - 1];
+            }
+        }
+
+        // no chances set: every prefab is equally likely
         return list[Random.Range(0, list.Length)];
     }
 
@@ -178,29 +198,46 @@ public class TargetSpawner : MonoBehaviour
         return spawnPoints[Random.Range(0, spawnPoints.Length)];
     }
 
-    void Spawn(GameObject prefab, Transform point, Vector2 speeds)
+    // "interval" = the shortest time between targets in this lane, used to work out the safe sway
+    void Spawn(GameObject prefab, Transform point, Vector2 speeds, float interval)
     {
         if (prefab == null || point == null) return;
 
-        // Create it at the spawn point, keeping the prefab's own rotation, as a child of this object
         GameObject spawned = Instantiate(prefab, point.position, prefab.transform.rotation, transform);
 
-        // If it slides, tell it which way, how fast, and how far to go
         LaneMover mover = spawned.GetComponent<LaneMover>();
         if (mover != null)
         {
             mover.direction = point.right;
             mover.speed = Random.Range(speeds.x, speeds.y);
             mover.travelDistance = laneLength;
+
+            // AUTO LIMITS
+            mover.maxHeight = verticalRoom;
+
+            float width = TargetWidth(spawned);
+            float spacing = mover.speed * interval;              // distance between neighbors in this lane
+            float gap = spacing - width - minGap;                // empty space between them
+            mover.maxSway = Mathf.Max(0f, gap / 2f);             // half each, so two neighbors can never meet
         }
     }
 
-    // Removes every target this spawner made (BoothManager calls this when the round ends)
+    // measures how wide the target is from left to right, using all its visible parts
+    float TargetWidth(GameObject obj)
+    {
+        Renderer[] rends = obj.GetComponentsInChildren<Renderer>();
+        if (rends.Length == 0) return 1f;
+
+        Bounds b = rends[0].bounds;
+        for (int i = 1; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
+        return b.size.x;
+    }
+
     public void ClearAll()
     {
         foreach (Transform child in transform)
         {
-            Destroy(child.gameObject);
+            if (child.GetComponent<Target>() != null) Destroy(child.gameObject);
         }
     }
 }

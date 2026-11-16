@@ -1598,6 +1598,9 @@ MonoBehaviour:
   prefabs:
   - {fileID: 1669863999363791888, guid: 084ad46a99ed74042852ffcd11e8bd3c, type: 3}
   - {fileID: 8823268541447462974, guid: 2272bb22f839e09478e2bf7ba3fc2082, type: 3}
+  chances:
+  - 65
+  - 35
   spawnPoints:
   - {fileID: 1859180532}
   - {fileID: 1566153289}
@@ -1611,6 +1614,8 @@ MonoBehaviour:
   speedRange: {x: 2, y: 3}
   everyLane: 1
   laneJitter: 0.4
+  verticalRoom: 0.2
+  minGap: 0.1
   booth: {fileID: 0}
   laneLength: 7
 --- !u!4 &817911545

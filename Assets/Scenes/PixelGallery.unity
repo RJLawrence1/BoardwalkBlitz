@@ -184,7 +184,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 99a6034942774fa41a0207b86c381070, type: 2}
+  - {fileID: 2100000, guid: f2248dceccb6e064c9b799f5b147a1bb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -288,7 +288,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 2
-  m_Color: {r: 1, g: 0.78431374, b: 0.4392157, a: 1}
+  m_Color: {r: 0.78431374, g: 0.84705883, b: 1, a: 1}
   m_Intensity: 3
   m_Range: 4
   m_SpotAngle: 30
@@ -731,7 +731,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bce8db4f2391fc54b94698dbb1004987, type: 2}
+  - {fileID: 2100000, guid: aca5905240364e6429e3db8b3cf7a6cb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1075,7 +1075,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 1
-  m_Color: {r: 1, g: 0.8156863, b: 0.5411765, a: 1}
+  m_Color: {r: 0.78431374, g: 0.84705883, b: 1, a: 1}
   m_Intensity: 0.6
   m_Range: 10
   m_SpotAngle: 30
@@ -1210,7 +1210,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 99a6034942774fa41a0207b86c381070, type: 2}
+  - {fileID: 2100000, guid: f2248dceccb6e064c9b799f5b147a1bb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1322,7 +1322,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 99a6034942774fa41a0207b86c381070, type: 2}
+  - {fileID: 2100000, guid: f2248dceccb6e064c9b799f5b147a1bb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1362,13 +1362,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 752390835}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0.02597, y: -1.7092099, z: -0.875}
   m_LocalScale: {x: 7, y: 1, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 920157019}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &817911543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1401,6 +1401,9 @@ MonoBehaviour:
   prefabs:
   - {fileID: 1669863999363791888, guid: 084ad46a99ed74042852ffcd11e8bd3c, type: 3}
   - {fileID: 8823268541447462974, guid: 2272bb22f839e09478e2bf7ba3fc2082, type: 3}
+  chances:
+  - 65
+  - 35
   spawnPoints:
   - {fileID: 1859180532}
   - {fileID: 1566153289}
@@ -1414,7 +1417,9 @@ MonoBehaviour:
   speedRange: {x: 2, y: 3}
   everyLane: 1
   laneJitter: 0.4
-  booth: {fileID: 0}
+  verticalRoom: 0.2
+  minGap: 0.1
+  booth: {fileID: 938555528}
   laneLength: 7
 --- !u!4 &817911545
 Transform:
@@ -1682,13 +1687,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BoothManager
   countdownSeconds: 3
   roundTime: 60
-  endDelay: 4
+  messageTime: 1.5
   shooter: {fileID: 330585548}
   spawners:
   - {fileID: 817911544}
   timerText: {fileID: 2029900700}
   scoreText: {fileID: 113582877}
   messageText: {fileID: 1810454797}
+  dialogue: {fileID: 0}
+  curly: {fileID: 0}
+  introLines: []
+  outroLines: []
+  duckAfterOutro: 0
+  showRunningTotal: 1
   endMessage: TIME!
   clearTargetsAtEnd: 0
   nextSceneName: ScoreTally
@@ -1758,7 +1769,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 2
-  m_Color: {r: 1, g: 0.78431374, b: 0.4392157, a: 1}
+  m_Color: {r: 0.78431374, g: 0.84705883, b: 1, a: 1}
   m_Intensity: 3
   m_Range: 4
   m_SpotAngle: 30
@@ -1981,6 +1992,7 @@ MonoBehaviour:
   score: 0
   totalScore: 0
   combo: 0
+  roundsPlayed: 0
   hitsPerLevel: 1
   maxMultiplier: 4
 --- !u!1 &1120544345
@@ -2200,7 +2212,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bce8db4f2391fc54b94698dbb1004987, type: 2}
+  - {fileID: 2100000, guid: aca5905240364e6429e3db8b3cf7a6cb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2538,7 +2550,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 2
-  m_Color: {r: 1, g: 0.78431374, b: 0.4392157, a: 1}
+  m_Color: {r: 0.78431374, g: 0.84705883, b: 1, a: 1}
   m_Intensity: 3
   m_Range: 4
   m_SpotAngle: 30
@@ -3287,7 +3299,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bce8db4f2391fc54b94698dbb1004987, type: 2}
+  - {fileID: 2100000, guid: bd4d58ac6cc5cd24d8484859c48f6186, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
