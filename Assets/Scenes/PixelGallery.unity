@@ -1399,11 +1399,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TargetSpawner
   prefabs:
-  - {fileID: 1669863999363791888, guid: 084ad46a99ed74042852ffcd11e8bd3c, type: 3}
-  - {fileID: 8823268541447462974, guid: 2272bb22f839e09478e2bf7ba3fc2082, type: 3}
+  - {fileID: 5213558291954287410, guid: 0dc6c9462dcf5e8498acc2b4ec184bea, type: 3}
+  - {fileID: 6274580442585770016, guid: 8a7fafa898855c64ebfbb17f2424255d, type: 3}
+  - {fileID: 2010688739648693237, guid: d668f843014562847bcaff0543870c4b, type: 3}
+  - {fileID: 6607042031133218621, guid: 4ee0b746e159953448cdd76339982ae7, type: 3}
   chances:
-  - 65
+  - 40
   - 35
+  - 22
+  - 3
   spawnPoints:
   - {fileID: 1859180532}
   - {fileID: 1566153289}
@@ -3331,6 +3335,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2130819845}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &6332144137270069485
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6677601467169133143}
+  m_Layer: 0
+  m_Name: AlienTargets
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6677601467169133143
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6332144137270069485}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.126586, y: 1.1621642, z: -11.673337}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -3343,3 +3378,4 @@ SceneRoots:
   - {fileID: 1437253762}
   - {fileID: 1021568625}
   - {fileID: 38764842}
+  - {fileID: 6677601467169133143}
