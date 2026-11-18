@@ -1,7 +1,8 @@
 // SOUNDMANAGER.CS  -  put it on one empty GameObject in the scene.
 //
 // IN ONE SENTENCE: any script can call SoundManager.Instance.Play(clip) to play a sound,
-// with a little random pitch so repeated sounds don't get annoying.
+// with a little random pitch so repeated sounds don't get annoying, at the player's
+// Sound FX volume from the Options menu.
 //
 // It keeps a few AudioSources and takes turns using them, so fast shots don't cut each other off.
 
@@ -37,6 +38,6 @@ public class SoundManager : MonoBehaviour
         next = (next + 1) % sources.Length;   // move to the next source for next time
 
         s.pitch = 1f + Random.Range(-pitchVariation, pitchVariation);
-        s.PlayOneShot(clip, volume);
+        s.PlayOneShot(clip, volume * GameSettings.SfxVolume);   // scaled by the Sound FX slider
     }
 }

@@ -1,6 +1,7 @@
 // GAMEINPUT.CS  -  no setup, don't put it on anything.
 // One place that answers "did the player fire this frame?" for mouse AND controller,
 // and remembers which one they're using (so rumble only happens on the controller).
+// While the game is paused, firing is ignored (the pause menu buttons still work).
 
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
@@ -12,9 +13,11 @@ public static class GameInput
     // true = the player's last shot came from a controller
     public static bool UsingPad { get; private set; }
 
-    // mouse click OR controller fire
+    // mouse click OR controller fire (never while paused)
     public static bool FirePressed()
     {
+        if (PauseMenu.IsPaused) return false;
+
         bool mouse = MousePressed();
         bool pad = PadFirePressed();
 

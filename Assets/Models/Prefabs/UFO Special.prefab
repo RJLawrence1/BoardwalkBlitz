@@ -159,12 +159,16 @@ MonoBehaviour:
   travelDistance: 0
   lifetime: 6
   path: 0
-  height: 0.15
+  height: 0.45
   frequency: 1.5
   swayAmount: 0.3
   swaySpeed: 1.2
   stepTime: 0.4
   randomStart: 1
+  hoverMinTime: 0.2
+  hoverMaxTime: 0.5
+  hoverSmooth: 0.12
+  upAmount: 0.5
   maxHeight: 999
   maxSway: 999
 --- !u!1 &7966233122680925479

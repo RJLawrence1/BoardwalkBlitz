@@ -247,12 +247,16 @@ MonoBehaviour:
   speed: 3
   travelDistance: 0
   lifetime: 6
-  path: 0
-  height: 0.15
+  path: 6
+  height: 0.3
   frequency: 1.5
   swayAmount: 0.3
   swaySpeed: 1.2
   stepTime: 0.4
   randomStart: 1
+  hoverMinTime: 0.5
+  hoverMaxTime: 1.2
+  hoverSmooth: 0.25
+  upAmount: 0.4
   maxHeight: 999
   maxSway: 999

@@ -15,8 +15,8 @@ using UnityEngine.InputSystem.LowLevel;
 
 public class GamepadCursor : MonoBehaviour
 {
-    public float speed = 1400f;     // pixels per second at full tilt
-    public float deadzone = 0.15f;  // ignore tiny stick drift
+    public float speed = 900f;     // pixels per second at full tilt
+    public float deadzone = 0.2f;  // ignore tiny stick drift
 
     static GamepadCursor instance;
     Coroutine rumbleRoutine;
@@ -41,7 +41,7 @@ public class GamepadCursor : MonoBehaviour
         if (stick.magnitude > deadzone)
         {
             stick = Vector2.ClampMagnitude(stick, 1f);
-            stick *= stick.magnitude;   // small tilt = slow and precise, full tilt = fast
+            stick *= stick.magnitude * stick.magnitude;   // even gentler at small tilts
 
             Vector2 pos = Mouse.current.position.ReadValue() + stick * speed * Time.unscaledDeltaTime;
             pos.x = Mathf.Clamp(pos.x, 0f, Screen.width - 1f);

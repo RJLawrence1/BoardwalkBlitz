@@ -33,6 +33,7 @@ public class CameraParallax : MonoBehaviour
     void Start()
     {
         // Remember where the camera started: this is the "perfect center" view
+        enableLean = GameSettings.CameraLean;   // use the setting from the Options menu
         startPosition = transform.position;
         startRotation = transform.rotation;
     }
