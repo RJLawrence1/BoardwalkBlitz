@@ -226,6 +226,8 @@ MonoBehaviour:
   hitSounds:
   - {fileID: 8300000, guid: 808c50db7d31de24b9b023fd46e0bb69, type: 3}
   - {fileID: 8300000, guid: 76afc396fe9a0ea4ab887e2b89723c91, type: 3}
+  rumbleStrength: 0.35
+  rumbleTime: 0.12
   stayUp: 1
   spinTime: 0.3
   flipDown: 0

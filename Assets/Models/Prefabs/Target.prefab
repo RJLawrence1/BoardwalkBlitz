@@ -132,6 +132,8 @@ MonoBehaviour:
   hitsToKill: 1
   hitSounds:
   - {fileID: 8300000, guid: 808c50db7d31de24b9b023fd46e0bb69, type: 3}
+  rumbleStrength: 0.3
+  rumbleTime: 0.1
   stayUp: 1
   spinTime: 0.3
   flipDown: 0
@@ -152,6 +154,15 @@ MonoBehaviour:
   speed: 3
   travelDistance: 0
   lifetime: 6
+  path: 0
+  height: 0.15
+  frequency: 1.5
+  swayAmount: 0.3
+  swaySpeed: 1.2
+  stepTime: 0.4
+  randomStart: 1
+  maxHeight: 999
+  maxSway: 999
 --- !u!1 &3636191505073101043
 GameObject:
   m_ObjectHideFlags: 0

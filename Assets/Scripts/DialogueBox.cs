@@ -1,8 +1,9 @@
 // DIALOGUEBOX.CS  -  put it on an empty GameObject in each booth scene.
 //
 // IN ONE SENTENCE: shows lines of dialogue one at a time in a box at the bottom of the screen,
-// typing them out letter by letter. Click / Space / Enter finishes the line or goes to the next,
-// and if nobody clicks, it moves on by itself after a reading delay (longer lines wait longer).
+// typing them out letter by letter. Click / Space / Enter / controller trigger or A finishes
+// the line or goes to the next, and if nobody presses anything, it moves on by itself after
+// a reading delay (longer lines wait longer).
 
 using System.Collections;
 using UnityEngine;
@@ -16,7 +17,7 @@ using UnityEngine.InputSystem;
 public class DialogueLine
 {
     public string speaker = "CURLY";
-    public Sprite portrait;               // the speaker's face for this line
+    public Sprite portrait;               // the speaker's face for this line (optional)
     [TextArea] public string text;        // family friendly (default)
     [TextArea] public string altText;     // used when Family Friendly is OFF (leave empty to use text)
 }
@@ -36,7 +37,7 @@ public class DialogueBox : MonoBehaviour
     public int blipEvery = 2;
 
     [Header("Auto advance")]
-    public bool autoAdvance = true;        // move to the next line on its own if nobody clicks
+    public bool autoAdvance = true;        // move to the next line on its own if nobody presses anything
     public float minWait = 5f;             // shortest wait (short lines)
     public float maxWait = 10f;            // longest wait (long lines)
     public float secondsPerLetter = 0.08f; // longer lines get more reading time
@@ -79,7 +80,7 @@ public class DialogueBox : MonoBehaviour
 
             while (visible < text.Length)
             {
-                if (Pressed()) { skipped = true; break; }   // click = show the whole line now
+                if (Pressed()) { skipped = true; break; }   // press = show the whole line now
 
                 typed += charsPerSecond * Time.deltaTime;
                 int now = Mathf.Min(Mathf.FloorToInt(typed), text.Length);
@@ -98,17 +99,17 @@ public class DialogueBox : MonoBehaviour
             }
 
             bodyText.maxVisibleCharacters = 99999;
-            if (skipped) yield return null;   // so that click doesn't also skip the next line
+            if (skipped) yield return null;   // so that press doesn't also skip the next line
 
             if (continueArrow != null) continueArrow.SetActive(true);
 
-            // wait for a click, OR until the reading time runs out
+            // wait for a press, OR until the reading time runs out
             float readTime = Mathf.Clamp(text.Length * secondsPerLetter, minWait, maxWait);
             float waited = 0f;
             while (!Pressed())
             {
                 waited += Time.deltaTime;
-                if (autoAdvance && waited >= readTime) break;   // nobody clicked, move on
+                if (autoAdvance && waited >= readTime) break;   // nobody pressed anything, move on
                 yield return null;
             }
             yield return null;
@@ -118,15 +119,15 @@ public class DialogueBox : MonoBehaviour
         IsPlaying = false;
     }
 
+    // mouse click, Space, Enter, or controller trigger / A
     bool Pressed()
     {
 #if ENABLE_INPUT_SYSTEM
-        bool click = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
         bool key = Keyboard.current != null &&
                    (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.enterKey.wasPressedThisFrame);
-        return click || key;
+        return GameInput.FirePressed() || key;
 #else
-        return Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return);
+        return GameInput.FirePressed() || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return);
 #endif
     }
 }

@@ -12,4 +12,11 @@ public static class GameSettings
         get { return PlayerPrefs.GetInt("FamilyFriendly", 1) == 1; }
         set { PlayerPrefs.SetInt("FamilyFriendly", value ? 1 : 0); PlayerPrefs.Save(); }
     }
+
+    // controller rumble, ON by default
+    public static bool Rumble
+    {
+        get { return PlayerPrefs.GetInt("Rumble", 1) == 1; }
+        set { PlayerPrefs.SetInt("Rumble", value ? 1 : 0); PlayerPrefs.Save(); }
+    }
 }

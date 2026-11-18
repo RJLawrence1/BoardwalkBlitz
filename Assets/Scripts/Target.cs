@@ -8,6 +8,9 @@
 //   Don't-shoot ....... tick "dontShoot" (you LOSE points and your combo breaks)
 //   Tough target ...... hitsToKill = 2 (like a bandit with a steel plate)
 //   Thrown bottle ..... untick "flipDown" so it just disappears
+//
+// RUMBLE: "rumbleStrength" is how hard the controller thumps when this target is hit
+// (0 = none, 1 = max). Crank it up on special targets like the red UFO.
 
 using UnityEngine;
 
@@ -19,21 +22,25 @@ public class Target : MonoBehaviour
     public bool dontShoot = false;
 
     [Header("Toughness")]
-    public int hitsToKill = 1;
+    public int hitsToKill = 1;      // ignored when stayUp is on
 
     [Header("Sound")]
-    public AudioClip[] hitSounds;       // every sound in this list plays on a hit
+    public AudioClip[] hitSounds;   // every sound in this list plays on a hit
+
+    [Header("Rumble")]
+    [Range(0f, 1f)] public float rumbleStrength = 0.4f;
+    public float rumbleTime = 0.12f;
 
     [Header("Hit reaction")]
-    public bool stayUp = false;
+    public bool stayUp = false;     // true = can be hit forever, spins on every hit
     public float spinTime = 0.3f;
-    public bool flipDown = true;
+    public bool flipDown = true;    // only used when stayUp is OFF
     public float flipTime = 0.25f;
 
     int hitsLeft;
     bool isDown;
     float flipProgress;
-    float spinLeft;
+    float spinLeft;                 // degrees of spinning still left to do
     Quaternion startRotation;
     Quaternion downRotation;
 
@@ -46,6 +53,7 @@ public class Target : MonoBehaviour
 
     void Update()
     {
+        // SPIN: turn a little each frame until the spin is used up
         if (spinLeft > 0f)
         {
             float step = Mathf.Min(360f / spinTime * Time.deltaTime, spinLeft);
@@ -53,6 +61,7 @@ public class Target : MonoBehaviour
             spinLeft -= step;
         }
 
+        // FLIP DOWN (only for targets that don't stay up)
         if (!isDown) return;
         flipProgress += Time.deltaTime / flipTime;
         transform.rotation = Quaternion.Slerp(startRotation, downRotation, flipProgress);
@@ -63,19 +72,25 @@ public class Target : MonoBehaviour
     {
         if (isDown) return;
 
+        // sounds
         if (SoundManager.Instance != null)
         {
             foreach (AudioClip clip in hitSounds)
                 SoundManager.Instance.Play(clip);
         }
 
+        // controller thump (only if they're playing with a controller)
+        if (rumbleStrength > 0f) GamepadCursor.Rumble(rumbleStrength, rumbleStrength, rumbleTime);
+
+        // GALLERY TARGET: score every single hit and spin
         if (stayUp)
         {
             GivePoints();
-            spinLeft = Mathf.Min(spinLeft + 360f, 720f);
+            spinLeft = Mathf.Min(spinLeft + 360f, 720f); // hits stack spins, max 2 queued
             return;
         }
 
+        // EVERYTHING ELSE
         hitsLeft--;
         if (hitsLeft > 0) return;
 
