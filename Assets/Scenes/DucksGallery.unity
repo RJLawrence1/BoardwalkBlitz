@@ -763,6 +763,120 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 183894954}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &184630594
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 184630596}
+  - component: {fileID: 184630595}
+  - component: {fileID: 184630597}
+  m_Layer: 0
+  m_Name: CurlyPopup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &184630595
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184630594}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 16.84, y: 25.284693}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!4 &184630596
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184630594}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.44, y: 0.51, z: -5.51}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &184630597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184630594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8cf6cf92b5f7d248b15dfc2203f5e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CurlyPopup
+  hiddenDrop: 1.01
+  popTime: 0.5
+  duckTime: 0.15
+  bounce: 1
+  bob: 1
+  bobAmount: 0.02
+  bobSpeed: 4
+  popSound: {fileID: 0}
+  duckSound: {fileID: 0}
 --- !u!1 &234123091
 GameObject:
   m_ObjectHideFlags: 0
@@ -1792,9 +1906,13 @@ MonoBehaviour:
   nameText: {fileID: 1906891781}
   bodyText: {fileID: 673438789}
   continueArrow: {fileID: 1753646890}
+  flapTime: 0.12
   charsPerSecond: 40
-  blipSound: {fileID: 0}
+  blipSound: {fileID: 8300000, guid: ba1f98fc857141d48872163ff390e604, type: 3}
   blipEvery: 2
+  voicePitch: 1.1
+  voicePitchVariation: 0.05
+  voiceVolume: 0.6
   autoAdvance: 1
   minWait: 5
   maxWait: 10
@@ -1925,7 +2043,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &673438790
@@ -2511,22 +2629,58 @@ MonoBehaviour:
   scoreText: {fileID: 113582877}
   messageText: {fileID: 1810454797}
   dialogue: {fileID: 559660749}
-  curly: {fileID: 0}
+  curly: {fileID: 184630594}
   introLines:
   - speaker: CURLY
+    pose: {fileID: 21300000, guid: 7c72475017a91654d9e3083b758484c6, type: 3}
+    restPose: {fileID: 0}
+    text: Step right up, step right up! Welcome to the Boardwalk, where the lights
+      are bright and the prizes are... mostly real!
+    altText: Step right up. Welcome to the Boardwalk, where the lights are bright
+      and the prizes are... let's say "real-ish."
     portrait: {fileID: 0}
-    text: Step right up, step right up! Welcome to the world-famous Boardwalk Ducks!
-      Hit everything that moves, and keep that streak going!
-    altText: Step right up! Welcome to the Boardwalk Ducks. Shoot the ducks, shoot
-      the targets, try not to embarrass yourself.
+  - speaker: CURLY
+    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+    restPose: {fileID: 21300000, guid: 451ab1c20bb87854f8ab7b2be65484a1, type: 3}
+    text: First up, the world-famous Boardwalk Ducks! Hit the ducks, hit the targets,
+      rack up those points!
+    altText: Ducks and targets. Shoot 'em. That's it. That's the game.
+    portrait: {fileID: 0}
+  - speaker: CURLY
+    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+    restPose: {fileID: 21300000, guid: 451ab1c20bb87854f8ab7b2be65484a1, type: 3}
+    text: Keep a streak going and your multiplier climbs. Miss, and it's back to
+      square one!
+    altText: Hit stuff in a row and the points stack up. Miss and, well, that's on
+      you.
+    portrait: {fileID: 0}
+  - speaker: CURLY
+    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+    restPose: {fileID: 21300000, guid: a901f5f1194f7d84a80cd658918d0a24, type: 3}
+    text: Real talk? This coat's itchy. But the games are good. Let's go.
+    altText: Real talk, this coat itches like crazy and they didn't even budget me
+      a hat. Anyway. Go shoot stuff.
+    portrait: {fileID: 0}
   outroLines:
   - speaker: CURLY
+    pose: {fileID: 21300000, guid: a2e24a93ae860ff41a3adcb572ed78e2, type: 3}
+    restPose: {fileID: 0}
+    text: Whoa, look at all those ducks spinning! I think they're dizzy!
+    altText: Huh. You actually hit some. I had money on zero.
     portrait: {fileID: 0}
-    text: "And that\u2019s a wrap on the ducks! Not bad, not bad at all. Come on,
-      friend, the next booth awaits!"
-    altText: "Alright, ducks are done. Whatever that was, let\u2019s just move on
-      to the next booth before anyone saw."
-  duckAfterOutro: 0
+  - speaker: CURLY
+    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+    restPose: {fileID: 21300000, guid: 451ab1c20bb87854f8ab7b2be65484a1, type: 3}
+    text: Not bad, not bad at all! But the night's still young.
+    altText: Okay, okay, not terrible. Don't let it go to your head.
+    portrait: {fileID: 0}
+  - speaker: CURLY
+    pose: {fileID: 21300000, guid: 7c72475017a91654d9e3083b758484c6, type: 3}
+    restPose: {fileID: 0}
+    text: Come on, friend, the next attraction awaits!
+    altText: C'mon, next booth. Try to keep up.
+    portrait: {fileID: 0}
+  duckAfterOutro: 1
   showRunningTotal: 1
   endMessage: TIME!
   clearTargetsAtEnd: 0
@@ -3924,7 +4078,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1753646893
@@ -4413,7 +4567,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1906891782
@@ -4956,3 +5110,4 @@ SceneRoots:
   - {fileID: 1021568625}
   - {fileID: 38764842}
   - {fileID: 1945800861}
+  - {fileID: 184630596}

@@ -4,6 +4,7 @@
 // with a little random pitch so repeated sounds don't get annoying, at the player's
 // Sound FX volume from the Options menu.
 //
+// basePitch lets a sound play higher or lower than normal (used for character "voices").
 // It keeps a few AudioSources and takes turns using them, so fast shots don't cut each other off.
 
 using UnityEngine;
@@ -30,14 +31,14 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void Play(AudioClip clip, float volume = 1f, float pitchVariation = 0.1f)
+    public void Play(AudioClip clip, float volume = 1f, float pitchVariation = 0.1f, float basePitch = 1f)
     {
         if (clip == null) return;
 
         AudioSource s = sources[next];
         next = (next + 1) % sources.Length;   // move to the next source for next time
 
-        s.pitch = 1f + Random.Range(-pitchVariation, pitchVariation);
+        s.pitch = basePitch + Random.Range(-pitchVariation, pitchVariation);
         s.PlayOneShot(clip, volume * GameSettings.SfxVolume);   // scaled by the Sound FX slider
     }
 }

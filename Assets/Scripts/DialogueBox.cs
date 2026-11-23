@@ -1,15 +1,20 @@
 // DIALOGUEBOX.CS  -  put it on an empty GameObject in each booth scene.
 //
 // IN ONE SENTENCE: shows lines of dialogue one at a time in a box at the bottom of the screen,
-// typing them out letter by letter, and swaps Curly's pose in the booth for each line.
-// Click / Space / Enter / controller trigger or A finishes the line or goes to the next, and if
-// nobody presses anything, it moves on by itself. Nothing can be skipped while the game is paused.
+// typing them out letter by letter with an Undertale-style voice blip. Click / Space / Enter /
+// controller trigger or A finishes the line or goes to the next, and if nobody presses anything,
+// it moves on by itself. Nothing can be skipped while the game is paused.
+//
+// VOICE: "Blip Sound" plays on letters and numbers only (spaces and punctuation stay silent,
+// which gives the natural pauses). "Voice Pitch" sets how high or low the character sounds.
+//
+// CURLY: this script doesn't need to know about him. BoothManager passes in his picture
+// (a Sprite Renderer) when he talks, and this swaps it to each line's pose.
 //
 // POSES (per line):
 //   Pose ........ what Curly looks like for this line (empty = keep whatever he had)
 //   Rest Pose ... optional mouth-closed version: he flaps between Pose and Rest Pose while the
 //                 text types (looks like talking), then holds Rest Pose when the line is done.
-//                 Only pair two poses that face the same way (like Present + Idle).
 
 using System.Collections;
 using UnityEngine;
@@ -39,14 +44,18 @@ public class DialogueBox : MonoBehaviour
     public TMP_Text bodyText;
     public GameObject continueArrow;      // shows when a line is done (optional)
 
-    [Header("Speaker in the booth")]
-    public SpriteRenderer speakerSprite;  // Curly's Sprite Renderer in the scene
+    [Header("Talking")]
     public float flapTime = 0.12f;        // seconds between mouth open/closed while talking
 
     [Header("Typing")]
     public float charsPerSecond = 40f;
-    public AudioClip blipSound;           // little talking blip (optional)
-    public int blipEvery = 2;
+
+    [Header("Voice (Undertale-style blips)")]
+    public AudioClip blipSound;                  // a tiny short blip
+    public int blipEvery = 2;                    // blip every N letters (1 = every letter, 2 = calmer)
+    [Range(0.5f, 2f)] public float voicePitch = 1.1f;     // higher = brighter voice, lower = deeper
+    [Range(0f, 0.3f)] public float voicePitchVariation = 0.05f; // tiny wobble so it isn't robotic
+    [Range(0f, 1f)] public float voiceVolume = 0.6f;
 
     [Header("Auto advance")]
     public bool autoAdvance = true;        // move to the next line on its own if nobody presses anything
@@ -61,8 +70,9 @@ public class DialogueBox : MonoBehaviour
         if (panel != null) panel.SetActive(false);
     }
 
-    // BoothManager waits on this: "yield return dialogue.Play(lines);"
-    public IEnumerator Play(DialogueLine[] lines)
+    // BoothManager calls this: "yield return dialogue.Play(lines, curlysPicture);"
+    // speakerSprite is optional: leave it out and the lines play with no pose swaps.
+    public IEnumerator Play(DialogueLine[] lines, SpriteRenderer speakerSprite = null)
     {
         if (lines == null || lines.Length == 0) yield break;
 
@@ -82,9 +92,9 @@ public class DialogueBox : MonoBehaviour
             }
             if (continueArrow != null) continueArrow.SetActive(false);
 
-            // set Curly's pose for this line
-            SetPose(line.pose);
-            bool flap = (line.pose != null && line.restPose != null);
+            // set the speaker's pose for this line
+            SetPose(speakerSprite, line.pose);
+            bool flap = (speakerSprite != null && line.pose != null && line.restPose != null);
             bool mouthOpen = true;
             float flapTimer = 0f;
 
@@ -94,6 +104,7 @@ public class DialogueBox : MonoBehaviour
 
             float typed = 0f;
             int visible = 0;
+            int lettersSinceBlip = 0;
             bool skipped = false;
 
             while (visible < text.Length)
@@ -103,16 +114,24 @@ public class DialogueBox : MonoBehaviour
                 typed += charsPerSecond * Time.deltaTime;   // freezes while paused
                 int now = Mathf.Min(Mathf.FloorToInt(typed), text.Length);
 
-                if (now > visible)
+                // go through each newly shown letter (a frame can show more than one)
+                while (visible < now)
                 {
-                    visible = now;
-                    bodyText.maxVisibleCharacters = visible;
+                    char c = text[visible];
+                    visible++;
 
-                    if (blipSound != null && visible % blipEvery == 0 && text[visible - 1] != ' ')
+                    // VOICE: only letters and numbers blip, so spaces and punctuation are natural pauses
+                    if (char.IsLetterOrDigit(c))
                     {
-                        if (SoundManager.Instance != null) SoundManager.Instance.Play(blipSound, 0.6f, 0.15f);
+                        lettersSinceBlip++;
+                        if (lettersSinceBlip >= blipEvery)
+                        {
+                            lettersSinceBlip = 0;
+                            PlayBlip();
+                        }
                     }
                 }
+                bodyText.maxVisibleCharacters = visible;
 
                 // TALKING FLAP: swap mouth open/closed while the text types
                 if (flap)
@@ -122,7 +141,7 @@ public class DialogueBox : MonoBehaviour
                     {
                         flapTimer = 0f;
                         mouthOpen = !mouthOpen;
-                        SetPose(mouthOpen ? line.pose : line.restPose);
+                        SetPose(speakerSprite, mouthOpen ? line.pose : line.restPose);
                     }
                 }
 
@@ -132,7 +151,7 @@ public class DialogueBox : MonoBehaviour
             bodyText.maxVisibleCharacters = 99999;
 
             // done talking: hold the mouth-closed pose (or keep the single pose)
-            if (flap) SetPose(line.restPose);
+            if (flap) SetPose(speakerSprite, line.restPose);
 
             if (skipped) yield return null;   // so that press doesn't also skip the next line
 
@@ -154,8 +173,14 @@ public class DialogueBox : MonoBehaviour
         IsPlaying = false;
     }
 
-    // swaps Curly's sprite (does nothing if the slot is empty)
-    void SetPose(Sprite pose)
+    void PlayBlip()
+    {
+        if (blipSound != null && SoundManager.Instance != null)
+            SoundManager.Instance.Play(blipSound, voiceVolume, voicePitchVariation, voicePitch);
+    }
+
+    // swaps the speaker's picture (does nothing if there's no speaker or no pose)
+    void SetPose(SpriteRenderer speakerSprite, Sprite pose)
     {
         if (speakerSprite != null && pose != null) speakerSprite.sprite = pose;
     }

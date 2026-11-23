@@ -220,6 +220,7 @@ RectTransform:
   - {fileID: 1377480628}
   - {fileID: 273355548}
   - {fileID: 911223846}
+  - {fileID: 1632263448}
   - {fileID: 1935084044}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -490,43 +491,57 @@ MonoBehaviour:
   rankGhost: {fileID: 1333779701}
   rankGhostChar: 126
   curlyText: {fileID: 1935084045}
+  curlyImage: {fileID: 1632263449}
+  charsPerSecond: 40
+  blipSound: {fileID: 8300000, guid: ba1f98fc857141d48872163ff390e604, type: 3}
+  blipEvery: 2
+  voicePitch: 1.1
+  voicePitchVariation: 0.05
+  voiceVolume: 0.6
   ranks:
   - title: NO SHOW
     minScore: 0
+    pose: {fileID: 21300000, guid: a901f5f1194f7d84a80cd658918d0a24, type: 3}
     curlyLine: ...Did you forget to pull the trigger? That's okay, friend. Everyone
       had a lovely evening anyway.
     altLine: Zero. Zero points. I've seen the ticket booth guy score higher, and
       he was asleep.
   - title: ROOKIE
     minScore: 1
+    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
     curlyLine: A valiant effort! And by valiant, I mean... you showed up. That counts!
     altLine: Well! You definitely held a cork gun. I'll give you that much.
   - title: MIDWAY REGULAR
     minScore: 15000
+    pose: {fileID: 21300000, guid: 451ab1c20bb87854f8ab7b2be65484a1, type: 3}
     curlyLine: Hey, not bad! You've got the makings of a real boardwalk regular.
     altLine: Not bad. Not good either. Very... middle of the midway.
   - title: SHARPSHOOTER
     minScore: 30000
+    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
     curlyLine: Not bad at all! Everyone here is mildly impressed, and that's hard
       to do.
     altLine: Okay, okay, you can actually aim. I'm almost impressed. Almost.
   - title: DEADEYE
     minScore: 45000
+    pose: {fileID: 21300000, guid: 7c72475017a91654d9e3083b758484c6, type: 3}
     curlyLine: Spectacular! Phenomenal! I'd tip my hat, but it's stuck.
     altLine: Damn, alright! I'd tip my hat, but honestly I don't get paid enough
       to fight with it.
   - title: CARNIVAL ACE
     minScore: 60000
+    pose: {fileID: 21300000, guid: 7c72475017a91654d9e3083b758484c6, type: 3}
     curlyLine: Everyone, keep an eye on this one! The prize booth is getting nervous.
     altLine: Somebody lock up the giant teddy bears, this one's coming for all of
       'em.
   - title: BOARDWALK LEGEND
     minScore: 80000
+    pose: {fileID: 21300000, guid: a2e24a93ae860ff41a3adcb572ed78e2, type: 3}
     curlyLine: ...Wait, seriously? Ladies and gentlemen, we have a CHAMPION!
     altLine: ...Are you cheating? No? Then what the hell. Ladies and gentlemen, a
       LEGEND!
   countUpTime: 2
-  rankSound: {fileID: 0}
+  rankSound: {fileID: 8300000, guid: 5ac5c93779a65bf4f898084759580419, type: 3}
   firstBoothScene: DucksGallery
   mainMenuScene: MainMenu
 --- !u!1 &500385299
@@ -2153,6 +2168,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1462977908}
   m_CullTransparentMesh: 1
+--- !u!1 &1632263447
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1632263448}
+  - component: {fileID: 1632263450}
+  - component: {fileID: 1632263449}
+  m_Layer: 5
+  m_Name: CurlyImage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1632263448
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632263447}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 10, y: 10, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 30783116}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 694.9, y: -460}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1632263449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632263447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 451ab1c20bb87854f8ab7b2be65484a1, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1632263450
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632263447}
+  m_CullTransparentMesh: 1
 --- !u!1 &1657192050
 GameObject:
   m_ObjectHideFlags: 0
@@ -2210,7 +2300,7 @@ GameObject:
   - component: {fileID: 1784234999}
   - component: {fileID: 1784234998}
   m_Layer: 5
-  m_Name: RawImage
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

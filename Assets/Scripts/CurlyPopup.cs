@@ -1,11 +1,11 @@
-// CURLYPOPUP.CS  -  put it on Curly (a sprite standing in the booth).
+// CURLYPOPUP.CS  -  put it on Curly (the object with his Sprite Renderer).
 //
-// IN ONE SENTENCE: pops Curly up from behind a shelf with a bouncy spring, bobs him a little
-// while he talks, and ducks him back down out of sight.
+// IN ONE SENTENCE: hides Curly below the shelf when the game starts, slides him up into view
+// when he talks, bobs him a little while he's up, and ducks him back down quickly.
 //
 // SETUP: place Curly in the editor exactly where he should be when he's UP (talking).
 // The script hides him "Hidden Drop" units lower when the game starts.
-// Put him between two rows, so the front shelf covers him when he's down.
+// Put him between two rows, so the shelf in front covers him when he's down.
 
 using System.Collections;
 using UnityEngine;
@@ -13,17 +13,18 @@ using UnityEngine;
 public class CurlyPopup : MonoBehaviour
 {
     [Header("Movement")]
-    public float hiddenDrop = 2f;     // how far down he hides (enough to be fully behind the shelf)
-    public float popTime = 0.35f;     // how long popping up takes
-    public float duckTime = 0.25f;    // how long ducking down takes
+    public float hiddenDrop = 1f;     // how far down he hides (enough to be fully behind the shelf)
+    public float popTime = 0.5f;      // how long sliding up takes (bigger = slower, smoother)
+    public float duckTime = 0.15f;    // how long ducking down takes (small = quick)
+    public bool bounce = false;       // true = springy overshoot at the top, false = smooth slide
 
     [Header("While talking")]
     public bool bob = true;
-    public float bobAmount = 0.05f;   // little up/down bounce while he talks
-    public float bobSpeed = 6f;
+    public float bobAmount = 0.02f;   // little up/down bounce while he talks
+    public float bobSpeed = 4f;
 
     [Header("Sounds")]
-    public AudioClip popSound;        // a "boing" or whoosh (optional)
+    public AudioClip popSound;        // a whoosh or "boing" as he comes up (optional)
     public AudioClip duckSound;       // optional
 
     Vector3 upPos;
@@ -47,18 +48,20 @@ public class CurlyPopup : MonoBehaviour
         }
     }
 
-    // BoothManager waits on these: "yield return curly.PopUp();"
+    // BoothManager waits on these: "yield return popup.PopUp();"
     public IEnumerator PopUp()
     {
         PlaySound(popSound);
         moving = true;
 
+        Vector3 start = transform.localPosition;
         float t = 0f;
         while (t < 1f)
         {
             t += Time.deltaTime / popTime;
-            // "ease out back" = shoots up, overshoots a little, settles: a springy pop
-            transform.localPosition = Vector3.LerpUnclamped(downPos, upPos, EaseOutBack(Mathf.Clamp01(t)));
+            float p = Mathf.Clamp01(t);
+            float e = bounce ? EaseOutBack(p) : EaseOutCubic(p);
+            transform.localPosition = Vector3.LerpUnclamped(start, upPos, e);
             yield return null;
         }
 
@@ -79,7 +82,7 @@ public class CurlyPopup : MonoBehaviour
         {
             t += Time.deltaTime / duckTime;
             float p = Mathf.Clamp01(t);
-            // "ease in" = starts slow, drops fast, like ducking out of sight
+            // "ease in": starts slow then drops fast, like ducking out of sight
             transform.localPosition = Vector3.Lerp(start, downPos, p * p);
             yield return null;
         }
@@ -88,7 +91,13 @@ public class CurlyPopup : MonoBehaviour
         moving = false;
     }
 
-    // the springy curve: goes a bit past 1 then settles back to 1
+    // smooth slide: fast at first, gently settles at the top (no overshoot)
+    float EaseOutCubic(float x)
+    {
+        return 1f - Mathf.Pow(1f - x, 3f);
+    }
+
+    // springy pop: goes a bit past the top, then settles back
     float EaseOutBack(float x)
     {
         float c1 = 1.70158f;

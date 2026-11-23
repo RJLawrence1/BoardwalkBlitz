@@ -1792,11 +1792,13 @@ MonoBehaviour:
   nameText: {fileID: 1906891781}
   bodyText: {fileID: 673438789}
   continueArrow: {fileID: 1753646890}
-  speakerSprite: {fileID: 0}
   flapTime: 0.12
   charsPerSecond: 40
-  blipSound: {fileID: 0}
+  blipSound: {fileID: 8300000, guid: ba1f98fc857141d48872163ff390e604, type: 3}
   blipEvery: 2
+  voicePitch: 1.1
+  voicePitchVariation: 0.05
+  voiceVolume: 0.6
   autoAdvance: 1
   minWait: 5
   maxWait: 10
@@ -2517,46 +2519,58 @@ MonoBehaviour:
   scoreText: {fileID: 113582877}
   messageText: {fileID: 1810454797}
   dialogue: {fileID: 559660749}
-  curly: {fileID: 0}
+  curly: {fileID: 955605898}
   introLines:
   - speaker: CURLY
-    pose: {fileID: 0}
+    pose: {fileID: 21300000, guid: 7c72475017a91654d9e3083b758484c6, type: 3}
     restPose: {fileID: 0}
     text: Ladies and gentlemen, prepare for liftoff! Welcome to the Pixel Gallery,
       our out-of-this-world space attraction!
-    altText: "Alright, everybody, strap in. Welcome to the Pixel Gallery. Yes, it\u2019s
-      space. On a boardwalk. Don\u2019t ask."
+    altText: Alright, strap in. Welcome to the Pixel Gallery. Yes, it's space. On
+      a boardwalk. Don't ask.
     portrait: {fileID: 0}
   - speaker: CURLY
-    pose: {fileID: 0}
-    restPose: {fileID: 0}
-    text: "The invaders are slippery, so they\u2019ll dodge up and down. Keep your
-      eyes peeled and your aim steady!"
+    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+    restPose: {fileID: 21300000, guid: 451ab1c20bb87854f8ab7b2be65484a1, type: 3}
+    text: The invaders are slippery, so they'll dodge up and down. Keep your eyes
+      peeled and your aim steady!
     altText: Heads up, these little guys actually dodge. Unlike the ducks. The ducks
       just kinda... accepted it.
     portrait: {fileID: 0}
   - speaker: CURLY
-    pose: {fileID: 0}
-    restPose: {fileID: 0}
-    text: And if you spot a red saucer... shoot it. Trust me
-    altText: "And if you see a red saucer, shoot it. I\u2019m not explaining. You\u2019ll
-      know.And if you see a red saucer, shoot it. I\u2019m not explaining. You\u2019ll
-      know."
+    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+    restPose: {fileID: 21300000, guid: 451ab1c20bb87854f8ab7b2be65484a1, type: 3}
+    text: Squids, blobs, saucers, the whole fleet's here. The rarer the alien, the
+      bigger the points!
+    altText: Squids, blobs, saucers. The weirder it looks, the more it's worth. Like
+      most things in life.
+    portrait: {fileID: 0}
+  - speaker: CURLY
+    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+    restPose: {fileID: 21300000, guid: a901f5f1194f7d84a80cd658918d0a24, type: 3}
+    text: And if you spot a red saucer... shoot it. Trust me.
+    altText: And if you see a red saucer, shoot it. I'm not explaining. You'll know.
     portrait: {fileID: 0}
   outroLines:
   - speaker: CURLY
-    pose: {fileID: 0}
+    pose: {fileID: 21300000, guid: a2e24a93ae860ff41a3adcb572ed78e2, type: 3}
     restPose: {fileID: 0}
     text: Whoa! The invaders have retreated! Earth is safe, and so is the boardwalk!
     altText: Huh. Earth survived. Honestly, did not have that on my bingo card.
     portrait: {fileID: 0}
   - speaker: CURLY
-    pose: {fileID: 0}
-    restPose: {fileID: 0}
-    text: "Thanks for defending the planet, friend! Let\u2019s see how you scored!"
-    altText: "Great job, space cadet. Let\u2019s go see how badly that went."
+    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+    restPose: {fileID: 21300000, guid: 451ab1c20bb87854f8ab7b2be65484a1, type: 3}
+    text: You're a real space hero, friend. The whole galaxy owes you one!
+    altText: Congrats, you saved the planet. No, there's no medal. Budget cuts.
     portrait: {fileID: 0}
-  duckAfterOutro: 0
+  - speaker: CURLY
+    pose: {fileID: 21300000, guid: 21a0693a0f910f7499bb422dd1e125af, type: 3}
+    restPose: {fileID: 0}
+    text: Thanks for playing! Let's go see how you scored!
+    altText: Great job, space cadet. Let's go see how good or bad that went.
+    portrait: {fileID: 0}
+  duckAfterOutro: 1
   showRunningTotal: 1
   endMessage: TIME!
   clearTargetsAtEnd: 0
@@ -2570,6 +2584,120 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 2214d60621688a445b04aa54f9f4105d, type: 3}
   goSound: {fileID: 8300000, guid: 5ac5c93779a65bf4f898084759580419, type: 3}
   timeUpSound: {fileID: 8300000, guid: ec1f2214d61744a459005dd0542bd966, type: 3}
+--- !u!1 &955605898
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 955605901}
+  - component: {fileID: 955605900}
+  - component: {fileID: 955605899}
+  m_Layer: 0
+  m_Name: CurlyPopup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &955605899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 955605898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8cf6cf92b5f7d248b15dfc2203f5e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CurlyPopup
+  hiddenDrop: 1.01
+  popTime: 0.5
+  duckTime: 0.15
+  bounce: 1
+  bob: 1
+  bobAmount: 0.02
+  bobSpeed: 4
+  popSound: {fileID: 0}
+  duckSound: {fileID: 0}
+--- !u!212 &955605900
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 955605898}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 16.84, y: 25.284693}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!4 &955605901
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 955605898}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.44, y: 0.51, z: -5.51}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1016593246
 GameObject:
   m_ObjectHideFlags: 0
@@ -4986,3 +5114,4 @@ SceneRoots:
   - {fileID: 1021568625}
   - {fileID: 38764842}
   - {fileID: 1945800861}
+  - {fileID: 955605901}

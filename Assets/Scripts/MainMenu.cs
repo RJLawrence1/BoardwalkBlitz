@@ -1,17 +1,20 @@
 // MAINMENU.CS  -  goes on an empty GameObject in your MAIN MENU scene.
 //
-// IN ONE SENTENCE: it has the functions your title-screen buttons call, slides the menu left
-// and a panel (Options / How To Play) in from the right, and saves the option settings.
+// IN ONE SENTENCE: it has the functions your title-screen buttons call, slides the menu
+// sideways and a panel in from the other side, and saves the option settings.
+//   Options / How To Play ... menu slides LEFT, panel comes in from the RIGHT
+//   Credits ................. menu slides RIGHT, panel comes in from the LEFT
 //
 // SETUP:
 //   - Put the logo, the ButtonGroup and the BestScoreText inside an empty "MainContent" object
-//     (stretched to fill the Canvas). That's what slides left. The background stays put.
-//   - OptionsPanel and HowToPlayPanel: left switched ON. The script moves them off-screen
-//     to the right when the game starts.
+//     (stretched to fill the Canvas). That's what slides. The background stays put.
+//   - OptionsPanel, HowToPlayPanel, CreditsPanel: left switched ON. The script moves them
+//     off-screen when the game starts.
 //   - Buttons (OnClick list):
 //       New Game     -> MainMenu.StartGame
 //       How To Play  -> MainMenu.ToggleHowToPlay   (its Back button too)
 //       Options      -> MainMenu.ToggleOptionsMenu (its Back button too)
+//       Credits      -> MainMenu.ToggleCredits     (its Back button too)
 //       Quit         -> MainMenu.QuitGame
 //   - Toggles (On Value Changed, pick from the "Dynamic bool" section at the top):
 //       Family Friendly -> SetFamilyFriendly, Rumble -> SetRumble, Camera Lean -> SetCameraLean
@@ -28,9 +31,10 @@ public class MainMenu : MonoBehaviour
     public string firstScene = "DucksGallery";
 
     [Header("Sliding")]
-    public RectTransform mainContent;      // logo + buttons + best score (slides left)
-    public RectTransform optionsPanel;     // slides in from the right
-    public RectTransform howToPlayPanel;   // slides in from the right
+    public RectTransform mainContent;      // logo + buttons + best score (slides sideways)
+    public RectTransform optionsPanel;     // comes in from the right
+    public RectTransform howToPlayPanel;   // comes in from the right
+    public RectTransform creditsPanel;     // comes in from the LEFT
     public float slideTime = 0.35f;        // seconds for one slide
 
     [Header("Options")]
@@ -52,6 +56,7 @@ public class MainMenu : MonoBehaviour
     bool sliding;                           // stops clicks while a slide is happening
     bool ready;                             // so setting up the toggles doesn't play click sounds
     RectTransform openPanel;                // which panel is showing right now (null = none)
+    float openSide;                         // +1 = open panel came from the right, -1 = from the left
     float lastPreview;                      // so the preview sound doesn't spam while dragging
 
     // how far "off-screen" is: the width of the Canvas
@@ -65,10 +70,11 @@ public class MainMenu : MonoBehaviour
         if (bestScoreText != null)
             bestScoreText.text = "BEST!" + PlayerPrefs.GetInt("BestScore", 0).ToString("0000000");
 
-        // menu in the middle, both panels waiting off-screen to the right
+        // menu in the middle, panels waiting off-screen on their sides
         if (mainContent != null) mainContent.anchoredPosition = Vector2.zero;
-        ParkOffScreen(optionsPanel);
-        ParkOffScreen(howToPlayPanel);
+        ParkOffScreen(optionsPanel, 1f);
+        ParkOffScreen(howToPlayPanel, 1f);
+        ParkOffScreen(creditsPanel, -1f);
 
         // show the saved settings
         if (familyFriendlyToggle != null) familyFriendlyToggle.isOn = GameSettings.FamilyFriendly;
@@ -88,11 +94,12 @@ public class MainMenu : MonoBehaviour
         slider.value = value;
     }
 
-    void ParkOffScreen(RectTransform panel)
+    // side: +1 = park off the right edge, -1 = park off the left edge
+    void ParkOffScreen(RectTransform panel, float side)
     {
         if (panel == null) return;
         panel.gameObject.SetActive(true);
-        panel.anchoredPosition = new Vector2(OffScreen, 0f);
+        panel.anchoredPosition = new Vector2(OffScreen * side, 0f);
     }
 
     // --- Button actions ---
@@ -114,12 +121,17 @@ public class MainMenu : MonoBehaviour
 
     public void ToggleOptionsMenu()
     {
-        TogglePanel(optionsPanel);
+        TogglePanel(optionsPanel, 1f);    // from the right
     }
 
     public void ToggleHowToPlay()
     {
-        TogglePanel(howToPlayPanel);
+        TogglePanel(howToPlayPanel, 1f);  // from the right
+    }
+
+    public void ToggleCredits()
+    {
+        TogglePanel(creditsPanel, -1f);   // from the LEFT
     }
 
     public void QuitGame()
@@ -182,23 +194,27 @@ public class MainMenu : MonoBehaviour
 
     // --- Sliding ---
 
-    void TogglePanel(RectTransform panel)
+    // side: +1 = panel comes in from the right (menu slides left)
+    //       -1 = panel comes in from the left (menu slides right)
+    void TogglePanel(RectTransform panel, float side)
     {
         if (panel == null || sliding || loading) return;
         PlayClick();
 
         if (openPanel == null)
         {
-            // OPEN: menu slides left, panel slides in from the right
+            // OPEN: menu slides away to the opposite side, panel slides into the middle
             openPanel = panel;
-            StartCoroutine(Slide(new Vector2(-OffScreen, 0f), panel, Vector2.zero));
+            openSide = side;
+            StartCoroutine(Slide(new Vector2(-OffScreen * side, 0f), panel, Vector2.zero));
         }
         else
         {
-            // CLOSE: the reverse, panel slides back out right, menu slides back in
+            // CLOSE: the reverse, panel goes back to its side, menu comes back to the middle
             RectTransform closing = openPanel;
+            float closingSide = openSide;
             openPanel = null;
-            StartCoroutine(Slide(Vector2.zero, closing, new Vector2(OffScreen, 0f)));
+            StartCoroutine(Slide(Vector2.zero, closing, new Vector2(OffScreen * closingSide, 0f)));
         }
     }
 

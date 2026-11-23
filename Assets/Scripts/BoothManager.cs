@@ -3,6 +3,9 @@
 // IN ONE SENTENCE: runs one round: Curly pops up and does his intro, ducks down, "ROUND #",
 // countdown, the timed round, "TIME!", round score, running total, Curly pops up for his outro,
 // then the next scene. Works for any number of booths in a row.
+//
+// CURLY: drag the Curly object into "Curly". It needs a CurlyPopup and a Sprite Renderer
+// (on itself or a child). This script finds both and handles everything Curly does.
 
 using System.Collections;
 using UnityEngine;
@@ -25,7 +28,7 @@ public class BoothManager : MonoBehaviour
 
     [Header("Dialogue")]
     public DialogueBox dialogue;       // optional
-    public CurlyPopup curly;           // Curly in the booth (optional)
+    public GameObject curly;           // the Curly object in the booth (optional)
     public DialogueLine[] introLines;  // Curly before the round
     public DialogueLine[] outroLines;  // Curly after the scores
     public bool duckAfterOutro = false;// true = Curly ducks before the scene fades
@@ -47,12 +50,23 @@ public class BoothManager : MonoBehaviour
     float timeLeft;
     bool isPlaying;
     bool endEarly;
+    CurlyPopup popup;                     // found on the Curly object automatically
+    SpriteRenderer curlySprite;           // his picture, found automatically
 
     public bool IsPlaying => isPlaying;
     public float Progress => Mathf.Clamp01(1f - timeLeft / roundTime);   // 0 at start, 1 at end
 
     void Start()
     {
+        // find Curly's pop-up and picture on the Curly object (or its children)
+        if (curly != null)
+        {
+            popup = curly.GetComponentInChildren<CurlyPopup>();
+            curlySprite = curly.GetComponentInChildren<SpriteRenderer>();
+            if (popup == null) Debug.LogWarning("BoothManager: no CurlyPopup found on " + curly.name);
+            if (curlySprite == null) Debug.LogWarning("BoothManager: no Sprite Renderer found on " + curly.name);
+        }
+
         timeLeft = roundTime;
         StartCoroutine(RunRound());
     }
@@ -71,12 +85,13 @@ public class BoothManager : MonoBehaviour
         SetShooting(false);
         if (sm != null) sm.StartBooth();
         UpdateUI();
+        ClearMessage();   // make sure no leftover text shows during the intro
         yield return new WaitForSeconds(0.5f);   // let the fade-in finish
 
         // CURLY'S INTRO: pop up, talk, duck down
-        if (curly != null) yield return curly.PopUp();
-        if (dialogue != null) yield return dialogue.Play(introLines);
-        if (curly != null) yield return curly.Duck();
+        if (popup != null) yield return popup.PopUp();
+        if (dialogue != null) yield return dialogue.Play(introLines, curlySprite);
+        if (popup != null) yield return popup.Duck();
 
         // ROUND #
         int roundNumber = (sm != null) ? sm.roundsPlayed + 1 : 1;
@@ -138,9 +153,9 @@ public class BoothManager : MonoBehaviour
         ClearMessage();
 
         // CURLY'S OUTRO: pop up and talk
-        if (curly != null) yield return curly.PopUp();
-        if (dialogue != null) yield return dialogue.Play(outroLines);
-        if (curly != null && duckAfterOutro) yield return curly.Duck();
+        if (popup != null) yield return popup.PopUp();
+        if (dialogue != null) yield return dialogue.Play(outroLines, curlySprite);
+        if (popup != null && duckAfterOutro) yield return popup.Duck();
 
         // NEXT SCENE
         if (!string.IsNullOrEmpty(nextSceneName)) SceneFader.FadeToScene(nextSceneName);

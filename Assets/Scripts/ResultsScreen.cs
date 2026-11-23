@@ -1,17 +1,22 @@
 // RESULTSSCREEN.CS  -  put it on an empty GameObject in the ScoreTally scene.
 //
 // IN ONE SENTENCE: counts up your total score, saves it if it's a new best, then shows your
-// rank and Curly's reaction (family friendly or not, based on the Options setting).
+// rank, Curly in a pose that fits, and types out his reaction with an Undertale-style voice blip
+// (family friendly or not).
 //
 // LED GHOSTS: the gray "unlit segment" texts are built automatically to match the real text's
 // length, so they always line up. Give each ghost the SAME font, size, alignment and
 // Rect Transform as the text it sits behind, and put it ABOVE that text in the Hierarchy.
 //
-// SETUP: drag in the texts and ghosts. Two buttons: "Play Again" -> PlayAgain(),
+// CURLY: a UI Image on the Canvas (curlyImage). It stays hidden until the rank appears,
+// then shows that rank's Pose.
+//
+// SETUP: drag in the texts, ghosts and Curly's image. Two buttons: "Play Again" -> PlayAgain(),
 // "Main Menu" -> BackToMenu(). Ranks go LOWEST FIRST.
 
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 [System.Serializable]
@@ -19,6 +24,7 @@ public class Rank
 {
     public string title;
     public int minScore;                 // you need at least this many points for this rank
+    public Sprite pose;                  // Curly's pose for this rank
     [TextArea] public string curlyLine;  // family friendly (default)
     [TextArea] public string altLine;    // used when Family Friendly is OFF (leave empty to use curlyLine)
 }
@@ -28,7 +34,7 @@ public class ResultsScreen : MonoBehaviour
     [Header("Score display (DSEG7)")]
     public TMP_Text scoreText;
     public TMP_Text scoreGhost;          // gray text behind the score
-    public char scoreGhostChar = '8';    // "8" lights every segment in DSEG7
+    public char scoreGhostChar = '8';    // "8" lights every segment in DSEG7 (use '~' for DSEG14)
     public int scoreDigits = 7;
 
     [Header("Rank display (DSEG14)")]
@@ -38,6 +44,15 @@ public class ResultsScreen : MonoBehaviour
 
     [Header("Curly")]
     public TMP_Text curlyText;
+    public Image curlyImage;             // Curly on the results screen (hidden until the rank shows)
+
+    [Header("Curly's voice (Undertale-style blips)")]
+    public float charsPerSecond = 40f;
+    public AudioClip blipSound;                  // the same blip as the booths
+    public int blipEvery = 2;                    // blip every N letters
+    [Range(0.5f, 2f)] public float voicePitch = 1.1f;
+    [Range(0f, 0.3f)] public float voicePitchVariation = 0.05f;
+    [Range(0f, 1f)] public float voiceVolume = 0.6f;
 
     [Header("Ranks (lowest first)")]
     public Rank[] ranks =
@@ -59,13 +74,13 @@ public class ResultsScreen : MonoBehaviour
         },
         new Rank {
             title = "SHARPSHOOTER", minScore = 30000,
-            curlyLine = "Not bad at all! Everyone here is mildly impressed, and that's hard to do.",
+            curlyLine = "Now we're talking! You've got a good eye, friend. The ducks are mildly impressed, and that's hard to do.",
             altLine   = "Okay, okay, you can actually aim. I'm almost impressed. Almost."
         },
         new Rank {
             title = "DEADEYE", minScore = 45000,
-            curlyLine = "Spectacular! Phenomenal! I'd tip my hat, but it's stuck.",
-            altLine   = "Damn, alright! I'd tip my hat, but honestly I don't get paid enough to fight with it."
+            curlyLine = "Spectacular! Phenomenal! I'd tip my hat, if they'd given me one.",
+            altLine   = "Damn, alright! I'd tip my hat, but they didn't budget for one."
         },
         new Rank {
             title = "CARNIVAL ACE", minScore = 60000,
@@ -100,10 +115,11 @@ public class ResultsScreen : MonoBehaviour
             PlayerPrefs.Save();
         }
 
-        // start: score shows all zeros, rank and Curly are blank
+        // start: score shows all zeros, rank and Curly are hidden
         SetLED(scoreText, scoreGhost, FormatScore(0), scoreGhostChar);
         SetLED(rankText, rankGhost, "", rankGhostChar);
         if (curlyText != null) curlyText.text = "";
+        if (curlyImage != null) curlyImage.enabled = false;
 
         yield return new WaitForSeconds(1f);   // let the fade-in finish first
 
@@ -120,20 +136,68 @@ public class ResultsScreen : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);   // little dramatic pause
 
-        // show the rank and Curly's line (alt line only if Family Friendly is off AND one exists)
+        // show the rank and Curly's pose
         Rank r = GetRank(total);
-        if (r != null)
-        {
-            SetLED(rankText, rankGhost, r.title, rankGhostChar);
+        if (r == null) yield break;
 
-            bool useAlt = !GameSettings.FamilyFriendly && !string.IsNullOrEmpty(r.altLine);
-            if (curlyText != null) curlyText.text = useAlt ? r.altLine : r.curlyLine;
-        }
+        SetLED(rankText, rankGhost, r.title, rankGhostChar);
         if (SoundManager.Instance != null) SoundManager.Instance.Play(rankSound, 1f, 0f);
+
+        if (curlyImage != null && r.pose != null)
+        {
+            curlyImage.sprite = r.pose;
+            curlyImage.preserveAspect = true;
+            curlyImage.enabled = true;
+        }
+
+        yield return new WaitForSeconds(0.4f);   // let the rank land before he talks
+
+        // type out Curly's line with his voice
+        bool useAlt = !GameSettings.FamilyFriendly && !string.IsNullOrEmpty(r.altLine);
+        yield return TypeLine(useAlt ? r.altLine : r.curlyLine);
+    }
+
+    // Typewriter + Undertale-style blips: letters and numbers blip, spaces and punctuation stay silent
+    IEnumerator TypeLine(string text)
+    {
+        if (curlyText == null || string.IsNullOrEmpty(text)) yield break;
+
+        curlyText.text = text;
+        curlyText.maxVisibleCharacters = 0;
+
+        float typed = 0f;
+        int visible = 0;
+        int lettersSinceBlip = 0;
+
+        while (visible < text.Length)
+        {
+            typed += charsPerSecond * Time.deltaTime;
+            int now = Mathf.Min(Mathf.FloorToInt(typed), text.Length);
+
+            while (visible < now)
+            {
+                char c = text[visible];
+                visible++;
+
+                if (char.IsLetterOrDigit(c))
+                {
+                    lettersSinceBlip++;
+                    if (lettersSinceBlip >= blipEvery)
+                    {
+                        lettersSinceBlip = 0;
+                        if (blipSound != null && SoundManager.Instance != null)
+                            SoundManager.Instance.Play(blipSound, voiceVolume, voicePitchVariation, voicePitch);
+                    }
+                }
+            }
+            curlyText.maxVisibleCharacters = visible;
+            yield return null;
+        }
+
+        curlyText.maxVisibleCharacters = 99999;
     }
 
     // Pads the score with zeros to a fixed number of digits (e.g. 7 -> "0004250").
-    // If a score ever gets longer than that, it just shows all of it.
     string FormatScore(int score)
     {
         return score.ToString(new string('0', scoreDigits));
@@ -145,7 +209,7 @@ public class ResultsScreen : MonoBehaviour
     {
         string led = text.Replace(' ', '!');
         if (main != null) main.text = led;
-        if (ghost != null) ghost.text = new string(ghostChar, led.Length);  // one lit segment per character
+        if (ghost != null) ghost.text = new string(ghostChar, led.Length);
     }
 
     // goes through the ranks lowest to highest and keeps the best one you qualify for
