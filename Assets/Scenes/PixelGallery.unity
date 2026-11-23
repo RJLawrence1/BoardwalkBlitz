@@ -4697,7 +4697,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicManager
   track: {fileID: 0}
-  trackVolume: 1
+  trackVolume: 0.75
   fadeInTime: 1
 --- !u!4 &1945800861
 Transform:

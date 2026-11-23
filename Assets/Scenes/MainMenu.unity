@@ -3886,7 +3886,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicManager
   track: {fileID: 8300000, guid: 3a9ad447bae1dd942aeb34947336f209, type: 3}
-  trackVolume: 1
+  trackVolume: 0.75
   fadeInTime: 1
 --- !u!1 &1064558586
 GameObject:
