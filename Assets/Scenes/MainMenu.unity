@@ -484,37 +484,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<color=#FF3020>AIM:</color> Move the mouse or stick to aim your cork gun.
-
-    
-
-    <color=#FF3020>SHOOT:</color>
-    Click, Right Trigger, or A to fire. Every hit spins the target and scores points!
-
-    
-
-    <color=#FF3020>COMBO:</color>
-    Hit in a row to raise your multiplier, up to x4. Miss, and it resets!
-
-    
-
-    <color=#FF3020>RELOAD:</color>
-    After 99 shots, you''ll reload for a second. Make ''em count.
-
-    
-
-    <color=#FF3020>SPECIALS:</color>
-    Rare targets are worth way more. Keep an eye out...
-
-    
-
-    <color=#FF3020>PAUSE:</color>
-    Press Esc or Start.
-
-    
-
-    <i><color=#AAAAAA>"Step right up and show ''em
-    what you''ve got!" - Curly</color></i>'
+  m_text: "<color=#FF3020>AIM:</color> Move the mouse or stick to aim your cork gun.\n\n\n<color=#FF3020>SHOOT:</color>
+    Click, Right Trigger, or A to fire. Every hit spins the target and scores points!\n\n\n<color=#FF3020>COMBO:</color>
+    Hit in a row to raise your multiplier, up to x4. Miss, and it resets!\n\n\n<color=#FF3020>RELOAD:</color>
+    After 99 shots, you'll reload for a second. Make 'em count.\n\n\n<color=#FF3020>SPECIALS:</color>
+    Rare targets are worth way more. Keep an eye out...\n\n\n<color=#FF3020>PAUSE:</color>
+    Press Esc or Start.\n\n\n<i><color=#AAAAAA>\"Step right up and show 'em what
+    you've got!\" \n- Curly</color></i>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f5abfaf5af8282e4cbee004210f3b1c3, type: 2}
   m_sharedMaterial: {fileID: -6065677497532456196, guid: f5abfaf5af8282e4cbee004210f3b1c3, type: 2}
@@ -541,8 +517,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 23
+  m_fontSizeBase: 23
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1958,6 +1934,8 @@ MonoBehaviour:
   musicSlider: {fileID: 1672119760}
   sfxSlider: {fileID: 747172974}
   bestScoreText: {fileID: 213579167}
+  panelMusic: {fileID: 8300000, guid: cf0eaa9262c9f114f8cb01a9db8d0c65, type: 3}
+  musicSwapTime: 0.3
   clickSound: {fileID: 8300000, guid: e5c2e8a84289aa74e926412e07fda8df, type: 3}
   sfxPreviewSound: {fileID: 8300000, guid: 439ae2203b997e34eaf1f6d41c801d35, type: 3}
   loadDelay: 0.3
@@ -3906,7 +3884,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2284730f5e7d4d047be2c02823245749, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicManager
-  track: {fileID: 0}
+  track: {fileID: 8300000, guid: 3a9ad447bae1dd942aeb34947336f209, type: 3}
   trackVolume: 1
   fadeInTime: 1
 --- !u!1 &1064558586
@@ -6035,7 +6013,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -80}
-  m_SizeDelta: {x: 900, y: 800}
+  m_SizeDelta: {x: 1050, y: 800}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1983101750
 MonoBehaviour:
@@ -6057,50 +6035,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<color=#FF3020>CREATED BY:</color>
-
-    Robert Lawrence
-
-    
-
-    <color=#FF3020>DESIGN,
-    PROGRAMMING & 3D MODELS:</color>
-
-    Robert Lawrence
-
-    
-
-    <color=#FF3020>CHARACTER
-    & LOGO ART:</color>
-
-    Robert Lawrence
-
-    
-
-    <color=#FF3020>MUSIC:</color>
-
-    [fill
-    in]
-
-    
-
-    <color=#FF3020>FONTS:</color>
-
-    DSEG by keshikan (SIL Open
-    Font License)
-
-    LucasArts SCUMM Solid by Goatmeal (FontStruct, via scummbar.com)
-
-    
-
-    <color=#FF3020>TEXTURES</color>
-
-    Google
-
-    
-
-    <i><color=#AAAAAA>"Thanks
-    for playing, friend. The boardwalk''s always open." - Curly</color></i>'
+  m_text: "<color=#FF3020>CREATED BY:</color>\nRobert Lawrence\n\n\n<color=#FF3020>DESIGN,
+    PROGRAMMING & 3D MODELS:</color>\nRobert Lawrence\n\n\n<color=#FF3020>CHARACTER
+    & LOGO ART:</color>\nRobert Lawrence\n\n\n<color=#FF3020>SOUND EFFECTS</color>\nPixabay
+    (pixabay.com)\nAdditional sounds made in jsfxr\n\n\n<color=#FF3020>MUSIC</color>\r\n\"Waltz
+    of the Carnies,\" \"Lobby Time,\" \"Meatball Parade,\"\r\n\"Grand Le Chase,\"
+    \"Pixel Peeker Polka - faster,\" \"Space Fighter Loop,\"\r\n\"Balloon Game\"\r\nKevin
+    MacLeod (incompetech.com)\r\nLicensed under Creative Commons: By Attribution
+    4.0\n\n\n<color=#FF3020>FONTS:</color>\nDSEG by keshikan (SIL Open Font License)\nLucasArts
+    SCUMM Solid by Goatmeal (CC BY-NC-SA, FontStruct)\n\n\n<color=#FF3020>TEXTURES
+    & IMAGES:</color>\nGoogle\n\n\n<i><color=#AAAAAA>\"Thanks for playing, friend.
+    The boardwalk's always open.\" \n- Curly</color></i>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f5abfaf5af8282e4cbee004210f3b1c3, type: 2}
   m_sharedMaterial: {fileID: -6065677497532456196, guid: f5abfaf5af8282e4cbee004210f3b1c3, type: 2}
@@ -6127,14 +6072,14 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -6166,7 +6111,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 171.73482}
+  m_margin: {x: 0, y: 0, z: 0, w: 147.00676}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

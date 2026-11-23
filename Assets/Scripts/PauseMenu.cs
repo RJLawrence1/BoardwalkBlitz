@@ -8,7 +8,7 @@
 //   - Buttons: RESUME -> PauseMenu.Resume, QUIT -> PauseMenu.QuitToMenu
 //
 // "Time.timeScale = 0" freezes everything that uses normal game time (targets, the round timer,
-// Curly's typing), while the menu, fades and sounds keep working.
+// Curly's typing), while the menu, fades, music and sounds keep working.
 
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
@@ -68,6 +68,9 @@ public class PauseMenu : MonoBehaviour
 
         // throw away this run's score so it doesn't count toward the best score
         if (ScoreManager.Instance != null) ScoreManager.Instance.ResetAll();
+
+        // music fades out along with the screen
+        if (MusicManager.Instance != null) MusicManager.Instance.FadeOut(SceneFader.fadeTime);
 
         // stays frozen during the fade (the fade runs on real time), then the menu unfreezes it
         SceneFader.FadeToScene(mainMenuScene);

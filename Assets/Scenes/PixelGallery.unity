@@ -2523,7 +2523,7 @@ MonoBehaviour:
   introLines:
   - speaker: CURLY
     pose: {fileID: 21300000, guid: 7c72475017a91654d9e3083b758484c6, type: 3}
-    restPose: {fileID: 0}
+    restPose: {fileID: 21300000, guid: 2f514d2b2d8786746b222ee5b7196866, type: 3}
     text: Ladies and gentlemen, prepare for liftoff! Welcome to the Pixel Gallery,
       our out-of-this-world space attraction!
     altText: Alright, strap in. Welcome to the Pixel Gallery. Yes, it's space. On
@@ -2546,15 +2546,15 @@ MonoBehaviour:
       most things in life.
     portrait: {fileID: 0}
   - speaker: CURLY
-    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+    pose: {fileID: 21300000, guid: 90978a3ad85411a4b89fd5bd4559e9da, type: 3}
     restPose: {fileID: 21300000, guid: a901f5f1194f7d84a80cd658918d0a24, type: 3}
     text: And if you spot a red saucer... shoot it. Trust me.
     altText: And if you see a red saucer, shoot it. I'm not explaining. You'll know.
     portrait: {fileID: 0}
   outroLines:
   - speaker: CURLY
-    pose: {fileID: 21300000, guid: a2e24a93ae860ff41a3adcb572ed78e2, type: 3}
-    restPose: {fileID: 0}
+    pose: {fileID: 21300000, guid: 1d04f028379871e47b0745cafbe2f2dd, type: 3}
+    restPose: {fileID: 21300000, guid: a2e24a93ae860ff41a3adcb572ed78e2, type: 3}
     text: Whoa! The invaders have retreated! Earth is safe, and so is the boardwalk!
     altText: Huh. Earth survived. Honestly, did not have that on my bingo card.
     portrait: {fileID: 0}
@@ -2565,12 +2565,16 @@ MonoBehaviour:
     altText: Congrats, you saved the planet. No, there's no medal. Budget cuts.
     portrait: {fileID: 0}
   - speaker: CURLY
-    pose: {fileID: 21300000, guid: 21a0693a0f910f7499bb422dd1e125af, type: 3}
-    restPose: {fileID: 0}
+    pose: {fileID: 21300000, guid: 9c1fb296892cc194a9ba630ac1aa8475, type: 3}
+    restPose: {fileID: 21300000, guid: 21a0693a0f910f7499bb422dd1e125af, type: 3}
     text: Thanks for playing! Let's go see how you scored!
     altText: Great job, space cadet. Let's go see how good or bad that went.
     portrait: {fileID: 0}
   duckAfterOutro: 1
+  preRoundMusic: {fileID: 8300000, guid: 6c49c6da3749e604191b3e1fdcf5f70b, type: 3}
+  roundMusic: {fileID: 8300000, guid: 68d482f3993dcc34f8fba6d046d31af7, type: 3}
+  postRoundMusic: {fileID: 8300000, guid: cf0eaa9262c9f114f8cb01a9db8d0c65, type: 3}
+  musicFadeTime: 1
   showRunningTotal: 1
   endMessage: TIME!
   clearTargetsAtEnd: 0

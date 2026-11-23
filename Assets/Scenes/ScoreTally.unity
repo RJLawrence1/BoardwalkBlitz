@@ -939,7 +939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2284730f5e7d4d047be2c02823245749, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicManager
-  track: {fileID: 0}
+  track: {fileID: 8300000, guid: 8a60213ec6fb2e7499c64efb1478bc61, type: 3}
   trackVolume: 1
   fadeInTime: 1
 --- !u!4 &869885403

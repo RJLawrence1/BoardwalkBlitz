@@ -4,6 +4,10 @@
 // countdown, the timed round, "TIME!", round score, running total, Curly pops up for his outro,
 // then the next scene. Works for any number of booths in a row.
 //
+// MUSIC: pre-round song during the intro (fades out after it), quiet countdown, round song
+// from GO! until TIME! (fades out), then the post-round song fades in for the scores and outro.
+// Needs a MusicManager in the scene (with its own Track left empty).
+//
 // CURLY: drag the Curly object into "Curly". It needs a CurlyPopup and a Sprite Renderer
 // (on itself or a child). This script finds both and handles everything Curly does.
 
@@ -32,6 +36,12 @@ public class BoothManager : MonoBehaviour
     public DialogueLine[] introLines;  // Curly before the round
     public DialogueLine[] outroLines;  // Curly after the scores
     public bool duckAfterOutro = false;// true = Curly ducks before the scene fades
+
+    [Header("Music")]
+    public AudioClip preRoundMusic;    // during Curly's intro
+    public AudioClip roundMusic;       // from GO! until TIME!
+    public AudioClip postRoundMusic;   // during the scores and Curly's outro
+    public float musicFadeTime = 1f;   // seconds for each fade in/out
 
     [Header("Score display")]
     public bool showRunningTotal = true;
@@ -86,19 +96,26 @@ public class BoothManager : MonoBehaviour
         if (sm != null) sm.StartBooth();
         UpdateUI();
         ClearMessage();   // make sure no leftover text shows during the intro
+
+        // PRE-ROUND MUSIC fades in
+        PlayMusic(preRoundMusic, musicFadeTime);
+
         yield return new WaitForSeconds(0.5f);   // let the fade-in finish
 
-        // CURLY'S INTRO: pop up, talk, duck down
+        // CURLY'S INTRO: pop up, talk...
         if (popup != null) yield return popup.PopUp();
         if (dialogue != null) yield return dialogue.Play(introLines, curlySprite);
+
+        // ...dialogue's done: pre-round music fades out while he ducks
+        FadeOutMusic(musicFadeTime);
         if (popup != null) yield return popup.Duck();
 
-        // ROUND #
+        // ROUND # (quiet)
         int roundNumber = (sm != null) ? sm.roundsPlayed + 1 : 1;
         ShowMessage("ROUND " + roundNumber);
         yield return new WaitForSeconds(messageTime);
 
-        // COUNTDOWN
+        // COUNTDOWN (quiet, just the beeps)
         for (int i = countdownSeconds; i > 0; i--)
         {
             ShowMessage(i.ToString());
@@ -108,6 +125,7 @@ public class BoothManager : MonoBehaviour
         }
         ShowMessage("GO!");
         PlaySound(goSound);
+        PlayMusic(roundMusic, 0f);   // ROUND MUSIC kicks in right on GO!
         Invoke("ClearMessage", 1f);
 
         // PLAYING
@@ -139,10 +157,15 @@ public class BoothManager : MonoBehaviour
         if (sm != null) sm.EndBooth();
         UpdateUI();
 
+        // TIME! and the round music fades out
         ShowMessage(endMessage);
         PlaySound(timeUpSound);
+        FadeOutMusic(musicFadeTime);
         onRoundEnd.Invoke();
         yield return new WaitForSeconds(messageTime);
+
+        // POST-ROUND MUSIC fades in for the scores and outro
+        PlayMusic(postRoundMusic, musicFadeTime);
 
         ShowMessage("ROUND\n" + roundScore.ToString("0000000"));
         yield return new WaitForSeconds(messageTime);
@@ -157,8 +180,19 @@ public class BoothManager : MonoBehaviour
         if (dialogue != null) yield return dialogue.Play(outroLines, curlySprite);
         if (popup != null && duckAfterOutro) yield return popup.Duck();
 
-        // NEXT SCENE
+        // NEXT SCENE (music fades with the screen)
+        FadeOutMusic(SceneFader.fadeTime);
         if (!string.IsNullOrEmpty(nextSceneName)) SceneFader.FadeToScene(nextSceneName);
+    }
+
+    void PlayMusic(AudioClip clip, float fade)
+    {
+        if (clip != null && MusicManager.Instance != null) MusicManager.Instance.Play(clip, fade);
+    }
+
+    void FadeOutMusic(float fade)
+    {
+        if (MusicManager.Instance != null) MusicManager.Instance.FadeOut(fade);
     }
 
     void SetSpawning(bool on)

@@ -11,6 +11,9 @@
 // CURLY: a UI Image on the Canvas (curlyImage). It stays hidden until the rank appears,
 // then shows that rank's Pose.
 //
+// MUSIC: put a MusicManager in this scene with the results song in its Track slot.
+// It fades out when you leave.
+//
 // SETUP: drag in the texts, ghosts and Curly's image. Two buttons: "Play Again" -> PlayAgain(),
 // "Main Menu" -> BackToMenu(). Ranks go LOWEST FIRST.
 
@@ -229,6 +232,7 @@ public class ResultsScreen : MonoBehaviour
         if (leaving) return;
         leaving = true;
         if (ScoreManager.Instance != null) ScoreManager.Instance.ResetAll();
+        FadeOutMusic();
         SceneFader.FadeToScene(firstBoothScene);
     }
 
@@ -237,6 +241,13 @@ public class ResultsScreen : MonoBehaviour
         if (leaving) return;
         leaving = true;
         if (ScoreManager.Instance != null) ScoreManager.Instance.ResetAll();
+        FadeOutMusic();
         SceneFader.FadeToScene(mainMenuScene);
+    }
+
+    // results music fades out along with the screen
+    void FadeOutMusic()
+    {
+        if (MusicManager.Instance != null) MusicManager.Instance.FadeOut(SceneFader.fadeTime);
     }
 }

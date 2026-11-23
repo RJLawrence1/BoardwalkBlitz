@@ -1,9 +1,13 @@
 // MAINMENU.CS  -  goes on an empty GameObject in your MAIN MENU scene.
 //
 // IN ONE SENTENCE: it has the functions your title-screen buttons call, slides the menu
-// sideways and a panel in from the other side, and saves the option settings.
+// sideways and a panel in from the other side, swaps the music while a panel is open,
+// and saves the option settings.
 //   Options / How To Play ... menu slides LEFT, panel comes in from the RIGHT
 //   Credits ................. menu slides RIGHT, panel comes in from the LEFT
+//
+// MUSIC: put a MusicManager in this scene with the menu song in its Track slot.
+// "Panel Music" plays while Options / How To Play / Credits is open, then the menu song returns.
 //
 // SETUP:
 //   - Put the logo, the ButtonGroup and the BestScoreText inside an empty "MainContent" object
@@ -47,6 +51,10 @@ public class MainMenu : MonoBehaviour
     [Header("Optional")]
     public TMP_Text bestScoreText;
 
+    [Header("Music")]
+    public AudioClip panelMusic;            // plays while Options / How To Play / Credits is open
+    public float musicSwapTime = 0.3f;      // seconds to fade out, then the same to fade in
+
     [Header("Sound")]
     public AudioClip clickSound;            // plays when you "shoot" a button
     public AudioClip sfxPreviewSound;       // plays while dragging the Sound FX slider (the quack)
@@ -58,6 +66,7 @@ public class MainMenu : MonoBehaviour
     RectTransform openPanel;                // which panel is showing right now (null = none)
     float openSide;                         // +1 = open panel came from the right, -1 = from the left
     float lastPreview;                      // so the preview sound doesn't spam while dragging
+    Coroutine musicSwap;
 
     // how far "off-screen" is: the width of the Canvas
     float OffScreen => ((RectTransform)mainContent.parent).rect.width;
@@ -116,6 +125,10 @@ public class MainMenu : MonoBehaviour
         PlayClick();
         if (ScoreManager.Instance != null) ScoreManager.Instance.ResetAll();
         yield return new WaitForSeconds(loadDelay);
+
+        // menu music fades out along with the screen
+        if (musicSwap != null) StopCoroutine(musicSwap);
+        if (MusicManager.Instance != null) MusicManager.Instance.FadeOut(SceneFader.fadeTime);
         SceneFader.FadeToScene(firstScene);
     }
 
@@ -177,7 +190,7 @@ public class MainMenu : MonoBehaviour
 
     public void SetMusicVolume(float value)
     {
-        GameSettings.MusicVolume = value;   // the menu music changes live while you drag
+        GameSettings.MusicVolume = value;   // the music changes live while you drag
     }
 
     public void SetSfxVolume(float value)
@@ -207,6 +220,7 @@ public class MainMenu : MonoBehaviour
             openPanel = panel;
             openSide = side;
             StartCoroutine(Slide(new Vector2(-OffScreen * side, 0f), panel, Vector2.zero));
+            SwapMusic(panelMusic);                       // panel song
         }
         else
         {
@@ -215,7 +229,24 @@ public class MainMenu : MonoBehaviour
             float closingSide = openSide;
             openPanel = null;
             StartCoroutine(Slide(Vector2.zero, closing, new Vector2(OffScreen * closingSide, 0f)));
+            if (MusicManager.Instance != null) SwapMusic(MusicManager.Instance.track);   // back to the menu song
         }
+    }
+
+    // quick fade out, then fade the new song in
+    void SwapMusic(AudioClip clip)
+    {
+        if (clip == null || MusicManager.Instance == null) return;
+        if (musicSwap != null) StopCoroutine(musicSwap);
+        musicSwap = StartCoroutine(SwapMusicRoutine(clip));
+    }
+
+    IEnumerator SwapMusicRoutine(AudioClip clip)
+    {
+        MusicManager.Instance.FadeOut(musicSwapTime);
+        yield return new WaitForSecondsRealtime(musicSwapTime);
+        MusicManager.Instance.Play(clip, musicSwapTime);
+        musicSwap = null;
     }
 
     IEnumerator Slide(Vector2 mainTo, RectTransform panel, Vector2 panelTo)

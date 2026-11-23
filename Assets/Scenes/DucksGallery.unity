@@ -2633,7 +2633,7 @@ MonoBehaviour:
   introLines:
   - speaker: CURLY
     pose: {fileID: 21300000, guid: 7c72475017a91654d9e3083b758484c6, type: 3}
-    restPose: {fileID: 0}
+    restPose: {fileID: 21300000, guid: 2f514d2b2d8786746b222ee5b7196866, type: 3}
     text: Step right up, step right up! Welcome to the Boardwalk, where the lights
       are bright and the prizes are... mostly real!
     altText: Step right up. Welcome to the Boardwalk, where the lights are bright
@@ -2655,7 +2655,7 @@ MonoBehaviour:
       you.
     portrait: {fileID: 0}
   - speaker: CURLY
-    pose: {fileID: 21300000, guid: 6fc59f8ecfc03e34ead0937ab09f2c23, type: 3}
+    pose: {fileID: 21300000, guid: 90978a3ad85411a4b89fd5bd4559e9da, type: 3}
     restPose: {fileID: 21300000, guid: a901f5f1194f7d84a80cd658918d0a24, type: 3}
     text: Real talk? This coat's itchy. But the games are good. Let's go.
     altText: Real talk, this coat itches like crazy and they didn't even budget me
@@ -2663,8 +2663,8 @@ MonoBehaviour:
     portrait: {fileID: 0}
   outroLines:
   - speaker: CURLY
-    pose: {fileID: 21300000, guid: a2e24a93ae860ff41a3adcb572ed78e2, type: 3}
-    restPose: {fileID: 0}
+    pose: {fileID: 21300000, guid: 1d04f028379871e47b0745cafbe2f2dd, type: 3}
+    restPose: {fileID: 21300000, guid: a2e24a93ae860ff41a3adcb572ed78e2, type: 3}
     text: Whoa, look at all those ducks spinning! I think they're dizzy!
     altText: Huh. You actually hit some. I had money on zero.
     portrait: {fileID: 0}
@@ -2676,11 +2676,15 @@ MonoBehaviour:
     portrait: {fileID: 0}
   - speaker: CURLY
     pose: {fileID: 21300000, guid: 7c72475017a91654d9e3083b758484c6, type: 3}
-    restPose: {fileID: 0}
+    restPose: {fileID: 21300000, guid: 2f514d2b2d8786746b222ee5b7196866, type: 3}
     text: Come on, friend, the next attraction awaits!
     altText: C'mon, next booth. Try to keep up.
     portrait: {fileID: 0}
   duckAfterOutro: 1
+  preRoundMusic: {fileID: 8300000, guid: 7c22804b56d3a8044be46feb1d207f3d, type: 3}
+  roundMusic: {fileID: 8300000, guid: 6df18febb69fc344da758933b98f2a1e, type: 3}
+  postRoundMusic: {fileID: 8300000, guid: cf0eaa9262c9f114f8cb01a9db8d0c65, type: 3}
+  musicFadeTime: 1
   showRunningTotal: 1
   endMessage: TIME!
   clearTargetsAtEnd: 0
