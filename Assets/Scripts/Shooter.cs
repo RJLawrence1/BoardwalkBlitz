@@ -1,17 +1,14 @@
 // SHOOTER.CS  -  goes on the Main Camera.
 //
-// IN ONE SENTENCE: when you fire (mouse click OR controller trigger / A), it shoots an invisible
-// line (a "raycast") from the camera through the cursor. If that line touches a Target,
-// it tells the Target "you got hit".
+// IN ONE SENTENCE: when you fire (mouse click, screen tap, OR controller trigger / A), it shoots
+// an invisible line (a "raycast") from the camera through the cursor or tap. If that line touches
+// a Target, it tells the Target "you got hit".
 //
 // ALSO DOES: a short reload pause every 99 shots, gun and reload sounds, a little controller
 // rumble on every shot, and the stun/blind effect when a thrown bottle hits you.
 // BoothManager switches shooting on/off with canShoot.
 
 using UnityEngine;
-#if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem;
-#endif
 
 public class Shooter : MonoBehaviour
 {
@@ -84,7 +81,7 @@ public class Shooter : MonoBehaviour
             return;
         }
 
-        if (ClickedThisFrame())
+        if (GameInput.FirePressed())
         {
             Shoot();
             shotsLeft--;
@@ -99,10 +96,10 @@ public class Shooter : MonoBehaviour
     void Shoot()
     {
         if (SoundManager.Instance != null) SoundManager.Instance.Play(shootSound);
-        GamepadCursor.Rumble(0.05f, 0.25f, 0.05f);   // tiny trigger tick on every shot
+        GamepadCursor.Rumble(0.05f, 0.25f, 0.05f);   // tiny trigger tick on every shot (controller only)
 
-        // Make a ray (an invisible line) from the camera through the cursor
-        Ray ray = Camera.main.ScreenPointToRay(PointerPosition());
+        // Make a ray (an invisible line) from the camera through the cursor or tap
+        Ray ray = Camera.main.ScreenPointToRay(GameInput.PointerPosition());
         bool hitSomething = false;
 
         if (Physics.Raycast(ray, out RaycastHit hit, maxDistance, hitLayers))
@@ -121,20 +118,5 @@ public class Shooter : MonoBehaviour
         {
             ScoreManager.Instance.RegisterMiss();
         }
-    }
-
-    // mouse click OR controller trigger / A
-    bool ClickedThisFrame()
-    {
-        return GameInput.FirePressed();
-    }
-
-    Vector2 PointerPosition()
-    {
-#if ENABLE_INPUT_SYSTEM
-        return Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
-#else
-        return Input.mousePosition;
-#endif
     }
 }

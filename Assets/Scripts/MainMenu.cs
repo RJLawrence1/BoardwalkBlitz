@@ -6,6 +6,8 @@
 //   Options / How To Play ... menu slides LEFT, panel comes in from the RIGHT
 //   Credits ................. menu slides RIGHT, panel comes in from the LEFT
 //
+// WEB BUILDS: the Quit button hides itself (a web page can't close itself).
+//
 // MUSIC: put a MusicManager in this scene with the menu song in its Track slot.
 // "Panel Music" plays while Options / How To Play / Credits is open, then the menu song returns.
 //
@@ -14,6 +16,7 @@
 //     (stretched to fill the Canvas). That's what slides. The background stays put.
 //   - OptionsPanel, HowToPlayPanel, CreditsPanel: left switched ON. The script moves them
 //     off-screen when the game starts.
+//   - Quit Button: drag in the QUIT button object, so it can hide itself on web.
 //   - Buttons (OnClick list):
 //       New Game     -> MainMenu.StartGame
 //       How To Play  -> MainMenu.ToggleHowToPlay   (its Back button too)
@@ -50,6 +53,7 @@ public class MainMenu : MonoBehaviour
 
     [Header("Optional")]
     public TMP_Text bestScoreText;
+    public GameObject quitButton;          // hidden automatically in web builds
 
     [Header("Music")]
     public AudioClip panelMusic;            // plays while Options / How To Play / Credits is open
@@ -75,6 +79,14 @@ public class MainMenu : MonoBehaviour
     {
         Time.timeScale = 1f;   // make sure the game isn't still frozen after quitting from the pause menu
         Cursor.visible = true;
+
+#if UNITY_WEBGL
+        // a web page can't close itself, so there's no point showing Quit
+        if (quitButton != null) quitButton.SetActive(false);
+
+        // there's no controller support on web, so the Rumble option doesn't apply
+        if (rumbleToggle != null) rumbleToggle.gameObject.SetActive(false);
+#endif
 
         if (bestScoreText != null)
             bestScoreText.text = "BEST!" + PlayerPrefs.GetInt("BestScore", 0).ToString("0000000");

@@ -1934,6 +1934,7 @@ MonoBehaviour:
   musicSlider: {fileID: 1672119760}
   sfxSlider: {fileID: 747172974}
   bestScoreText: {fileID: 213579167}
+  quitButton: {fileID: 901667326}
   panelMusic: {fileID: 8300000, guid: cf0eaa9262c9f114f8cb01a9db8d0c65, type: 3}
   musicSwapTime: 0.3
   clickSound: {fileID: 8300000, guid: e5c2e8a84289aa74e926412e07fda8df, type: 3}

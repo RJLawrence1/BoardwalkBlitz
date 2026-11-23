@@ -3,6 +3,9 @@
 // IN ONE SENTENCE: the controller's sticks move the real mouse cursor (so your PNG crosshair
 // moves too), the trigger / A button "clicks" whatever UI is under it, and any script can make
 // the controller rumble with GamepadCursor.Rumble(low, high, seconds).
+//
+// WEB BUILDS: this switches itself off completely (browsers can't move the cursor for aiming).
+// Rumble calls then just do nothing.
 
 using System.Collections;
 using System.Collections.Generic;
@@ -15,8 +18,8 @@ using UnityEngine.InputSystem.LowLevel;
 
 public class GamepadCursor : MonoBehaviour
 {
-    public float speed = 900f;     // pixels per second at full tilt
-    public float deadzone = 0.2f;  // ignore tiny stick drift
+    public float speed = 1000f;     // pixels per second at full tilt
+    public float deadzone = 0.2f;   // ignore tiny stick drift
 
     static GamepadCursor instance;
     Coroutine rumbleRoutine;
@@ -25,9 +28,13 @@ public class GamepadCursor : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void AutoCreate()
     {
+#if UNITY_WEBGL
+        return;   // no controller support in web builds
+#else
         GameObject go = new GameObject("GamepadCursor");
         DontDestroyOnLoad(go);
         instance = go.AddComponent<GamepadCursor>();
+#endif
     }
 
     void Update()
@@ -41,7 +48,7 @@ public class GamepadCursor : MonoBehaviour
         if (stick.magnitude > deadzone)
         {
             stick = Vector2.ClampMagnitude(stick, 1f);
-            stick *= stick.magnitude * stick.magnitude;   // even gentler at small tilts
+            stick *= stick.magnitude * stick.magnitude;   // gentle at small tilts, fast at full tilt
 
             Vector2 pos = Mouse.current.position.ReadValue() + stick * speed * Time.unscaledDeltaTime;
             pos.x = Mathf.Clamp(pos.x, 0f, Screen.width - 1f);

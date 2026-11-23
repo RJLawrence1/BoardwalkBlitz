@@ -1,20 +1,18 @@
 // CAMERAPARALLAX.CS  -  goes on the Main Camera (right next to the Shooter script).
 //
-// IN ONE SENTENCE: the camera "leans" toward the mouse, like leaning over the booth counter.
-// Mouse in the center = no lean. Mouse in the top-right corner = lean up and right.
-// Mouse in the bottom-left corner = lean down and left.
+// IN ONE SENTENCE: the camera "leans" toward the cursor, like leaning over the booth counter.
+// Cursor in the center = no lean. Cursor in the top-right corner = lean up and right.
 //
 // WHY IT LOOKS 3D: the camera SLIDES (it doesn't spin), so near layers (the counter) shift
 // more than far layers (the backdrop). Your brain reads that difference as depth.
-// This only works if your layers sit at different distances from the camera.
+//
+// SETTINGS: follows the Camera Lean option in the menu, and switches itself off on phones
+// and tablets (there's no cursor to follow, just taps).
 //
 // DOES IT BREAK AIMING? No. The Shooter fires its ray from wherever the camera is,
 // through the cursor, so you still hit what you point at.
 
 using UnityEngine;
-#if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem;
-#endif
 
 public class CameraParallax : MonoBehaviour
 {
@@ -32,8 +30,10 @@ public class CameraParallax : MonoBehaviour
 
     void Start()
     {
+        // use the setting from the Options menu, and never lean on phones/tablets
+        enableLean = GameSettings.CameraLean && !Application.isMobilePlatform;
+
         // Remember where the camera started: this is the "perfect center" view
-        enableLean = GameSettings.CameraLean;   // use the setting from the Options menu
         startPosition = transform.position;
         startRotation = transform.rotation;
     }
@@ -42,8 +42,8 @@ public class CameraParallax : MonoBehaviour
     void LateUpdate()
     {
         Vector2 lean = enableLean
-            ? ScreenToLean(PointerPosition(), Screen.width, Screen.height)
-            : new Vector2(0f, 0f);
+            ? ScreenToLean(GameInput.PointerPosition(), Screen.width, Screen.height)
+            : Vector2.zero;
 
         // Slide along the camera's ORIGINAL right and up directions
         Vector3 right = startRotation * Vector3.right;
@@ -69,14 +69,5 @@ public class CameraParallax : MonoBehaviour
         float x = Mathf.Clamp((pixel.x / width - 0.5f) * 2f, -1f, 1f);
         float y = Mathf.Clamp((pixel.y / height - 0.5f) * 2f, -1f, 1f);
         return new Vector2(x, y);
-    }
-
-    Vector2 PointerPosition()
-    {
-#if ENABLE_INPUT_SYSTEM
-        return Mouse.current != null ? Mouse.current.position.ReadValue() : new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-#else
-        return Input.mousePosition;
-#endif
     }
 }
